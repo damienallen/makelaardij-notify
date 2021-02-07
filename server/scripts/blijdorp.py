@@ -80,14 +80,21 @@ def scrape_item(item_url: str):
 
     item_data = extract_features(features)
 
-    # Fetch photos
+    # Address
+    address = soup.find("h1", {"class": "obj_address"})
+    if address:
+        address_str = (
+            address.string.split(": ")[1] if ": " in address.string else address.string
+        ).split(",")
+    item_data["address"] = address_str[0]
+
+    # Photos
     photo_urls = []
     for photo in photos:
         photo_urls.append(photo["src"])
-
     item_data["photos"] = photo_urls
 
-    print(item_data)
+    return item_data
 
 
 def extract_features(features):
