@@ -1,12 +1,10 @@
 import React from 'react'
-import { observer } from 'mobx-react'
 import { createStyles, Theme, makeStyles } from '@material-ui/core/styles'
 import { AppBar, Toolbar, IconButton } from '@material-ui/core'
 import { BiSliderAlt } from 'react-icons/bi'
 
 import { Search } from './Search'
 import { ThemeToggle } from './ThemeToggle'
-// import { useStores } from '../stores'
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -21,8 +19,7 @@ const useStyles = makeStyles((theme: Theme) =>
     })
 )
 
-export const NavBar: React.FC = observer(() => {
-    // const { ui } = useStores()
+export const NavBar: React.FC = () => {
     const classes = useStyles()
 
     return (
@@ -37,4 +34,4 @@ export const NavBar: React.FC = observer(() => {
             </Toolbar>
         </AppBar>
     )
-})
+}
