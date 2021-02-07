@@ -1,20 +1,19 @@
+import os
+from datetime import datetime
+from typing import List
+
 from fastapi import Depends, FastAPI, HTTPException, Request, status
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
-from mongoengine import connect, errors
-import os
-
-from datetime import datetime
-from secrets import token_urlsafe
-
-from models import (
-    ImportSpeciesJson,
-    SpeciesDB,
-    Species,
-)
+from models import Apartment
+from motor.motor_asyncio import AsyncIOMotorClient
+from odmantic import AIOEngine, Model, ObjectId
 
 # Fast API main app
 app = FastAPI()
+
+# Connect to mongo
+client = AsyncIOMotorClient("mongodb://mongo:27017/")
+engine = AIOEngine(motor_client=client, database="aanbod")
 
 # Handle CORS
 origins = ["*"]
@@ -26,31 +25,23 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Connect to mongo
-connect("aanbod", host="mongodb://mongo")
-
-
 # Main app
-
-
 @app.get("/api/")
-def hello():
+async def hello():
     return {"Hello": "Rotterdam"}
 
 
-@app.get("/api/apartments/")
-def list_apartments():
+@app.get("/api/apartments/", response_model=List[Apartment])
+async def list_apartments():
     """
     List all apartment objects
     """
-    apartments = []
-    for apartment in ApartmentDB.objects:
-        apartments.append(Apartment.from_mongo(apartment))
+    apartments = await engine.find(Apartment)
     return apartments
 
 
 @app.get("/api/apartments/clear/")
-def clear_apartments(request: Request):
+async def clear_apartments(request: Request):
     """
     Remove all apartments
     """
@@ -61,19 +52,21 @@ def clear_apartments(request: Request):
             detail="Invalid authentication token",
         )
 
-    ApartmentDB.objects.all().delete()
+    # Remove apartments
+    apartments = await engine.find(Apartment)
+    await engine.delete(apartments)
     return {"detail": "All apartments removed from collection"}
 
 
 @app.get("/api/apartment/{oid}/")
-def get_apartment(oid: str):
+async def get_apartment(oid: str, response_model=Apartment):
     """
     Retrieve apartment from DB
     """
-    try:
-        selected_apartment = ApartmentDB.objects.get(id=oid)
-        return Apartment.from_mongo(selected_apartment)
-    except ApartmentDB.DoesNotExist:
+    apartment = await engine.find_one(Apartment, Apartment.id == oid)
+    if apartment is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Object ID not found"
         )
+
+    return apartment

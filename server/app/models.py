@@ -1,35 +1,28 @@
-from mongoengine import (
-    Document,
-    BooleanField,
-    DateTimeField,
-    FloatField,
-    IntField,
-    StringField,
-)
-from pydantic import BaseModel, Field
 from datetime import datetime
 from typing import List, Optional
 
+from odmantic import EmbeddedModel, Field, Model
 
-class Building(BaseModel):
+
+class Building(EmbeddedModel):
     year_constructed: Optional[int] = None
     building_type: Optional[str] = None
     roof_type: Optional[str] = None
     roof_material: Optional[str] = None
     num_floors: Optional[int] = None
-    parking: Optional[bool] = None
+    parking: Optional[str] = None
 
 
-class Energy(BaseModel):
+class Energy(EmbeddedModel):
     heating: Optional[str] = None
     water: Optional[str] = None
     label: Optional[str] = None
 
 
-class Unit(BaseModel):
+class Unit(EmbeddedModel):
     area: int
-    volume: int
-    energy: Field(default_factory=Energy)
+    volume: Optional[int] = None
+    energy: Energy
 
     vve_cost: Optional[int] = None
     own_land: Optional[bool] = None
@@ -38,28 +31,20 @@ class Unit(BaseModel):
     tags: List[str] = Field(default_factory=list)
 
 
-class Apartment(BaseModel):
+class Apartment(Model):
+    makelaardij: str
     uuid: str
     asking_price: int
+    address: str
+    listing_url: str
+    photos: List[str] = Field(default_factory=list)
     available: bool = True
     hidden: bool = False
 
-    unit: Field(default_factory=Unit)
-    building: Field(default_factory=Building)
+    unit: Unit
+    building: Building
 
-    date_added: datetime = datetime.now()
-    date_listed: Optional[datetime] = None
-    last_updated: Optional[datetime] = None
-
-
-class ApartmentDB(Document):
-    """
-    Mongo apartment schema
-    """
-
-    apartment = StringField(max_length=60)
-    name_la = StringField(max_length=60)
-    name_nl = StringField(max_length=60)
-    name_en = StringField(max_length=60)
-    width = FloatField(null=True)
-    height = FloatField(null=True)
+    entry_added: datetime = Field(default_factory=datetime.utcnow)
+    entry_updated: datetime = Field(default_factory=datetime.utcnow)
+    listing_added: Optional[datetime] = None
+    lsting_updated: Optional[datetime] = None

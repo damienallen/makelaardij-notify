@@ -1,12 +1,18 @@
+import asyncio
 import re
+from datetime import datetime
+from random import randint
 from time import sleep
 from typing import List
-from random import randint
 
-import requests
+import httpx
+from app.common import months_nl
+from app.models import Apartment
 from bs4 import BeautifulSoup
+from odmantic import AIOEngine
 
 BASE_URL = "https://www.blijdorpmakelaardij.nl"
+MAKELAARDIJ = "blijdorp"
 CITY = "rotterdam"
 
 DELAY = 5
@@ -32,11 +38,12 @@ def main():
     print(f"Done, scrapped {len(apartment_urls)} listings.")
 
 
-def scrape_page(index: int) -> List[str]:
+async def scrape_page(index: int) -> List[str]:
     url = f"{BASE_URL}/woningaanbod/koop/{CITY}?skip={index*10}"
 
     print(f"({index}) {url} ", end="")
-    result = requests.get(url)
+    async with httpx.AsyncClient() as client:
+        result = await client.get(url)
     print(f"[{result.status_code}]")
 
     # Check for good status
@@ -58,12 +65,13 @@ def scrape_page(index: int) -> List[str]:
     return urls
 
 
-def scrape_item(item_url: str):
+async def scrape_item(item_url: str):
     url = f"{BASE_URL}{item_url}"
     url_parts = item_url.split("/")
 
     print(f"+ {url_parts[-2]} -> {url_parts[-1]} ", end="")
-    result = requests.get(url)
+    async with httpx.AsyncClient() as client:
+        result = await client.get(url)
     print(f"[{result.status_code}]")
 
     # Check for good status
@@ -78,6 +86,7 @@ def scrape_item(item_url: str):
     features = soup.find_all("div", {"class": ["table-responsive", "feautures"]})
 
     item_data = extract_features(features)
+    item_data["listing_url"] = url
 
     # Address
     address = soup.find("h1", {"class": "obj_address"})
@@ -120,32 +129,42 @@ def extract_features(features):
     tags = find_tags(raw_data)
 
     return {
+        "makelaardij": MAKELAARDIJ,
         "uuid": raw_data["Referentienummer"],
         "asking_price": find_int(raw_data["Vraagprijs"]),
-        "year_constructed": int(raw_data["Bouwperiode"]),
-        "building_type": raw_data.get("Soort bouw"),
-        "vve_cost": find_int(raw_data.get("Servicekosten")),
-        "own_land": own_land,
-        "parking": raw_data.get("Parkeergelegenheid"),
-        "area": find_int(raw_data["Gebruiksoppervlakte wonen"]),
-        "volume": find_int(raw_data["Inhoud"]),
-        "num_bathrooms": find_int(raw_data["Aantal badkamers"]),
-        "num_rooms": num_rooms,
-        "num_floors": num_floors,
-        "roof": {
-            "type": raw_data.get("Type dak"),
-            "material": raw_data.get("Dakbedekking"),
-        },
-        "energy": {
-            "heating": raw_data.get("Verwarmingssysteem"),
-            "water": raw_data.get("Warm water"),
-            "label": raw_data.get("Energielabel"),
-        },
-        "date_added": raw_data["Aangeboden sinds"],
-        "last_updated": raw_data["Laatste wijziging"],
         "available": "Status" not in raw_data,
-        "tags": tags,
+        "unit": {
+            "area": find_int(raw_data["Gebruiksoppervlakte wonen"]),
+            "volume": find_int(raw_data["Inhoud"]),
+            "energy": {
+                "heating": raw_data.get("Verwarmingssysteem"),
+                "water": raw_data.get("Warm water"),
+                "label": raw_data.get("Energielabel"),
+            },
+            "vve_cost": find_int(raw_data.get("Servicekosten")),
+            "own_land": own_land,
+            "num_bathrooms": find_int(raw_data["Aantal badkamers"]),
+            "num_rooms": num_rooms,
+            "tags": tags,
+        },
+        "building": {
+            "year_constructed": int(raw_data["Bouwperiode"]),
+            "building_type": raw_data.get("Soort bouw"),
+            "roof_type": raw_data.get("Type dak"),
+            "roof_material": raw_data.get("Dakbedekking"),
+            "num_floors": num_floors,
+            "parking": raw_data.get("Parkeergelegenheid"),
+        },
+        "listing_added": find_date(raw_data["Aangeboden sinds"]),
+        "listing_updated": find_date(raw_data["Laatste wijziging"]),
     }
+
+
+def find_date(date_str: str) -> datetime:
+    date = date_str.split(" ")
+    return datetime(
+        year=int(date[3]), month=months_nl[date[2].lower()], day=int(date[1])
+    )
 
 
 def find_tags(raw_data) -> List[str]:
@@ -172,7 +191,18 @@ def get_interval(base_value: float, jitter: float) -> float:
     return base_value + randint(-jitter * 10, jitter * 10) / 10
 
 
+async def test_run():
+    test_item = await scrape_item("/woningaanbod/koop/rotterdam/wijnbrugstraat/39")
+    apartment = Apartment.parse_obj(test_item)
+
+    engine = AIOEngine(database="aanbod")
+    await engine.save(apartment)
+
+    print("Done.")
+
+
 if __name__ == "__main__":
     # main()
-    test_item = scrape_item("/woningaanbod/koop/rotterdam/wijnbrugstraat/39")
-    print(test_item)
+
+    loop = asyncio.get_event_loop()
+    loop.run_until_complete(test_run())

@@ -1,0 +1,7 @@
+### Test endpoint
+GET https://aanbod.dallen.dev/api/ HTTP/1.1
+
+### List apartments
+GET https://aanbod.dallen.dev/api/apartments/ HTTP/1.1
+
+###
