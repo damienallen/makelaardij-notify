@@ -29,6 +29,6 @@ jobs:
         run: |
           docker login docker.pkg.github.com --username ${{ github.actor }} --password ${{ secrets.GITHUB_TOKEN }}
           docker pull $REGISTRY_URL:$TAG || true
-          docker build -t $IMAGE_NAME:$TAG --cache-from $REGISTRY_URL:$TAG --target production -f Dockerfile ./server
+          docker build -t $IMAGE_NAME:$TAG --cache-from $REGISTRY_URL:$TAG --target production -f ./server/Dockerfile ./server
           docker tag $IMAGE_NAME:$TAG $REGISTRY_URL:$TAG
           docker push $REGISTRY_URL:$TAG
