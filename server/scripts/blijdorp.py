@@ -174,4 +174,5 @@ def get_interval(base_value: float, jitter: float) -> float:
 
 if __name__ == "__main__":
     # main()
-    scrape_item("/woningaanbod/koop/rotterdam/wijnbrugstraat/39")
+    test_item = scrape_item("/woningaanbod/koop/rotterdam/wijnbrugstraat/39")
+    print(test_item)
