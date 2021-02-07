@@ -1,24 +1,22 @@
 import React from 'react'
-import logo from './logo.svg'
-import './App.css'
+import { Provider } from 'mobx-react'
+import CssBaseline from '@material-ui/core/CssBaseline'
+import { ThemeProvider } from '@material-ui/core/styles'
+
+import { Layout } from './components/Layout'
+import { RootStore } from './stores'
 
 export const App: React.FC = () => {
+    const stores = new RootStore()
+
     return (
-        <div className="App">
-            <header className="App-header">
-                <img src={logo} className="App-logo" alt="logo" />
-                <p>
-                    Edit <code>src/App.tsx</code> and save to reloaderz.
-                </p>
-                <a
-                    className="App-link"
-                    href="https://reactjs.org"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                >
-                    Learn React
-                </a>
-            </header>
-        </div>
+        <Provider root={stores} settings={stores.settings} ui={stores.ui}>
+            <ThemeProvider theme={stores.ui.theme}>
+                <div id="App">
+                    <CssBaseline />
+                    <Layout />
+                </div>
+            </ThemeProvider>
+        </Provider>
     )
 }
