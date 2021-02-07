@@ -13,7 +13,7 @@ jobs:
     env:
       CI: true
       IMAGE_NAME: makenot_server
-      REGISTRY_URL: docker.pkg.github.com/damienallen/makelaardij-notify/fastapi
+      REGISTRY_URL: docker.pkg.github.com/damienallen/makelaardij-notify/server
       TAG: develop
 
     steps:
