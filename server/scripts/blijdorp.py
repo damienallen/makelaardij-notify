@@ -1,4 +1,3 @@
-import sys
 import re
 from time import sleep
 from typing import List
@@ -118,17 +117,9 @@ def extract_features(features):
     if "Woonlaag" in raw_data and "e woonlaag" in raw_data["Woonlaag"]:
         num_floors = int(raw_data["Woonlaag"].split("e")[0])
 
-    tags = []
-    if raw_data.get("Tuin aanwezig") == "Ja":
-        tags.append("garden")
-    if raw_data.get("Heeft schuur/berging") == "Ja":
-        tags.append("shed")
-    if raw_data.get("Opstal verzekering") == "Ja":
-        tags.append("theft_insurance")
-    if raw_data.get("Heeft een lift") == "Ja":
-        tags.append("lift")
+    tags = find_tags(raw_data)
 
-    data_dict = {
+    return {
         "uuid": raw_data["Referentienummer"],
         "asking_price": find_int(raw_data["Vraagprijs"]),
         "year_constructed": int(raw_data["Bouwperiode"]),
@@ -155,7 +146,19 @@ def extract_features(features):
         "available": "Status" not in raw_data,
         "tags": tags,
     }
-    return data_dict
+
+
+def find_tags(raw_data) -> List[str]:
+    tags = []
+    if raw_data.get("Tuin aanwezig") == "Ja":
+        tags.append("garden")
+    if raw_data.get("Heeft schuur/berging") == "Ja":
+        tags.append("shed")
+    if raw_data.get("Opstal verzekering") == "Ja":
+        tags.append("theft_insurance")
+    if raw_data.get("Heeft een lift") == "Ja":
+        tags.append("lift")
+    return tags
 
 
 def find_int(value: str) -> int:
