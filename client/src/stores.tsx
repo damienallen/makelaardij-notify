@@ -1,6 +1,6 @@
 import React from 'react'
 // import Cookies from 'universal-cookie'
-import { observable, computed } from 'mobx'
+import { action, computed, makeObservable, observable } from 'mobx'
 import { Theme } from '@material-ui/core/styles'
 
 import { lightTheme, darkTheme } from './theme'
@@ -21,27 +21,34 @@ export class UIStore {
     @observable dark: boolean = false
     @observable theme: Theme = lightTheme
 
-    setDark(value: boolean) {
+    @action setDark(value: boolean) {
         this.dark = value
         this.theme = this.dark ? darkTheme : lightTheme
+        console.debug(`Theme set to '${this.theme.palette.type}'`)
     }
 
-    constructor(public root: RootStore) {}
+    @action toggleDark() {
+        this.setDark(!this.dark)
+    }
+
+    constructor(public root: RootStore) {
+        makeObservable(this)
+    }
 }
 
 export class SettingStore {
     @observable host: string = 'https://aanbod.dallen.dev/api'
     @observable token: string | null = null
 
-    setHost(value: string) {
+    @action setHost(value: string) {
         this.host = value
     }
 
-    setToken(value: string) {
+    @action setToken(value: string) {
         this.token = value
     }
 
-    clearToken() {
+    @action clearToken() {
         this.token = null
     }
 
@@ -55,7 +62,9 @@ export class SettingStore {
         }
     }
 
-    constructor(public root: RootStore) {}
+    constructor(public root: RootStore) {
+        makeObservable(this)
+    }
 }
 
 // Store helpers
