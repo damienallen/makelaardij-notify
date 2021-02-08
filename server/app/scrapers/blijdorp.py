@@ -15,11 +15,14 @@ BASE_URL = "https://www.blijdorpmakelaardij.nl"
 MAKELAARDIJ = "blijdorp"
 CITY = "rotterdam"
 
-DELAY = 5
+PAGE_DELAY = 5
+LISTING_DELAY = 2
 JITTER = 2
 
+engine = AIOEngine(database="aanbod")
 
-def main():
+
+async def main():
     print("Starting scraper")
 
     apartment_urls = []
@@ -28,14 +31,30 @@ def main():
 
     while skip_index < skip_limit:
         skip_index += 1
-        index_urls = scrape_page(skip_index)
+        index_urls = await scrape_page(skip_index)
         if index_urls:
             apartment_urls += index_urls
-            sleep(get_interval(DELAY, JITTER))
+            sleep(get_interval(PAGE_DELAY, JITTER))
         else:
             break
 
-    print(f"Done, scrapped {len(apartment_urls)} listings.")
+    print(f"Scrapped {len(apartment_urls)} listings, fethcing...")
+
+    for url in apartment_urls:
+        listing = await engine.find_one(
+            Apartment, Apartment.listing_url == f"{BASE_URL}{url}"
+        )
+
+        if listing is None:
+            listing_data = await scrape_item(url)
+            apartment = Apartment.parse_obj(listing_data)
+            await engine.save(apartment)
+            sleep(get_interval(LISTING_DELAY, JITTER))
+
+        else:
+            print(f"Skipping '{listing.address}', already in DB")
+
+    print("Done!")
 
 
 async def scrape_page(index: int) -> List[str]:
@@ -120,9 +139,11 @@ def extract_features(features):
     # Harder to extract items
     own_land = raw_data["Eigendom"] == "Eigendom" if raw_data.get("Eigendom") else None
 
+    num_rooms = None
     if (rooms_str := raw_data.get("Aantal kamers")) is not None:
         num_rooms = int(rooms_str.split(" ")[0])
 
+    num_floors = None
     if "Woonlaag" in raw_data and "e woonlaag" in raw_data["Woonlaag"]:
         num_floors = int(raw_data["Woonlaag"].split("e")[0])
 
@@ -202,7 +223,6 @@ async def test_run():
 
 
 if __name__ == "__main__":
-    # main()
-
     loop = asyncio.get_event_loop()
+    loop.run_until_complete(main())
     loop.run_until_complete(test_run())
