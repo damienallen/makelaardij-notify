@@ -3,12 +3,12 @@ import { observer } from 'mobx-react'
 import { createStyles, Theme, ThemeProvider, makeStyles } from '@material-ui/core/styles'
 import { CssBaseline, Container } from '@material-ui/core'
 
+import { Listings } from './Listings'
 import { NavBar } from './NavBar'
 import { useStores } from '../stores'
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
-        appBarSpacer: theme.mixins.toolbar,
         content: {
             flexGrow: 1,
             height: '100vh',
@@ -22,16 +22,15 @@ const useStyles = makeStyles((theme: Theme) =>
 )
 
 export const Layout: React.FC = observer(() => {
-    const { settings, ui } = useStores()
+    const { ui } = useStores()
     const classes = useStyles()
 
     return (
         <ThemeProvider theme={ui.theme}>
             <CssBaseline />
             <main className={classes.content}>
-                <div className={classes.appBarSpacer} />
                 <Container maxWidth="lg" className={classes.container}>
-                    {settings.host}
+                    <Listings />
                 </Container>
             </main>
             <NavBar />

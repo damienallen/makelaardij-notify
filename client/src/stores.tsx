@@ -1,3 +1,4 @@
+import axios, { AxiosResponse, AxiosError } from 'axios'
 import React from 'react'
 // import Cookies from 'universal-cookie'
 import { action, computed, makeObservable, observable } from 'mobx'
@@ -8,12 +9,39 @@ import { lightTheme, darkTheme } from './theme'
 // const cookies = new Cookies()
 
 export class RootStore {
+    public apartments: ApartmentStore
     public ui: UIStore
     public settings: SettingStore
 
     constructor() {
+        this.apartments = new ApartmentStore(this)
         this.ui = new UIStore(this)
         this.settings = new SettingStore(this)
+    }
+}
+
+export class ApartmentStore {
+    @observable list: any[] = []
+
+    @action setList(value: any) {
+        this.list = value
+    }
+
+    fetch() {
+        const url = `${this.root.settings.host}/apartments/`
+        console.log(`[GET] ${url}`)
+        axios
+            .get(url)
+            .then((response: AxiosResponse) => {
+                this.setList(response.data)
+            })
+            .catch((error: AxiosError) => {
+                console.error(error.response)
+            })
+    }
+
+    constructor(public root: RootStore) {
+        makeObservable(this)
     }
 }
 
