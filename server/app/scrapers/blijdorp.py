@@ -15,7 +15,7 @@ BASE_URL = "https://www.blijdorpmakelaardij.nl"
 MAKELAARDIJ = "blijdorp"
 CITY = "rotterdam"
 
-PAGE_DELAY = 5
+PAGE_DELAY = 1
 LISTING_DELAY = 2
 JITTER = 2
 
@@ -65,7 +65,8 @@ async def scrape_page(index: int) -> List[str]:
     if result.status_code == 404:
         return []
     elif not result.status_code == 200:
-        raise Exception(f"Error: {result.reason}")
+        print(f"Error: {result.reason}")
+        return []
 
     # Extract HTML
     soup = BeautifulSoup(result.content, "html.parser")
@@ -84,7 +85,7 @@ async def scrape_item(item_url: str):
     url = f"{BASE_URL}{item_url}"
     url_parts = item_url.split("/")
 
-    print(f"+ {url_parts[-2]} -> {url_parts[-1]} ", end="")
+    print(f"+ {url_parts[-2]} {url_parts[-1]} ", end="")
     async with httpx.AsyncClient() as client:
         result = await client.get(url)
     print(f"[{result.status_code}]")
@@ -211,17 +212,6 @@ def get_interval(base_value: float, jitter: float) -> float:
     return base_value + randint(-jitter * 10, jitter * 10) / 10
 
 
-async def test_run():
-    test_item = await scrape_item("/woningaanbod/koop/rotterdam/wijnbrugstraat/39")
-    apartment = Apartment.parse_obj(test_item)
-
-    engine = AIOEngine(database="aanbod")
-    await engine.save(apartment)
-
-    print("Done.")
-
-
 if __name__ == "__main__":
     loop = asyncio.get_event_loop()
     loop.run_until_complete(main())
-    loop.run_until_complete(test_run())
