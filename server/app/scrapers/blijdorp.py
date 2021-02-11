@@ -15,7 +15,7 @@ BASE_URL = "https://www.blijdorpmakelaardij.nl"
 MAKELAARDIJ = "blijdorp"
 CITY = "rotterdam"
 
-PAGE_DELAY = 1
+PAGE_DELAY = 2
 LISTING_DELAY = 2
 JITTER = 2
 
@@ -30,13 +30,13 @@ async def main():
     skip_index = 0
 
     while skip_index < skip_limit:
-        skip_index += 1
         index_urls = await scrape_page(skip_index)
         if index_urls:
             apartment_urls += index_urls
             sleep(get_interval(PAGE_DELAY, JITTER))
         else:
             break
+        skip_index += 1
 
     print(f"Scraped {len(apartment_urls)} listings, fetching...")
 
