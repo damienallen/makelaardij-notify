@@ -20,11 +20,22 @@ export class RootStore {
     }
 }
 
-export class ApartmentStore {
-    @observable list: any[] = []
+export interface Apartment {
+    url: string
+    address: string
+    asking_price: number
+    added: string
+    makelaardij: string
+}
 
-    @action setList(value: any) {
+export class ApartmentStore {
+    @observable list: Apartment[] = []
+
+    @action setList(value: Apartment[]) {
         this.list = value
+        this.list.sort((a: Apartment, b: Apartment) => {
+            return Date.parse(b.added) - Date.parse(a.added)
+        })
     }
 
     fetch() {

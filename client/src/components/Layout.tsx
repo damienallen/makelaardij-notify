@@ -3,7 +3,7 @@ import { observer } from 'mobx-react'
 import { createStyles, Theme, ThemeProvider, makeStyles } from '@material-ui/core/styles'
 import { CssBaseline, Container } from '@material-ui/core'
 
-import { Listings } from './Listings'
+import { ApartmentList } from './ApartmentList'
 import { NavBar } from './NavBar'
 import { useStores } from '../stores'
 
@@ -30,7 +30,7 @@ export const Layout: React.FC = observer(() => {
             <CssBaseline />
             <main className={classes.content}>
                 <Container maxWidth="lg" className={classes.container}>
-                    <Listings />
+                    <ApartmentList />
                 </Container>
             </main>
             <NavBar />

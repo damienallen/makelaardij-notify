@@ -6,10 +6,8 @@ import { StoreProvider } from './stores'
 import './index.css'
 
 ReactDOM.render(
-    <React.StrictMode>
-        <StoreProvider>
-            <App />
-        </StoreProvider>
-    </React.StrictMode>,
+    <StoreProvider>
+        <App />
+    </StoreProvider>,
     document.getElementById('root')
 )
