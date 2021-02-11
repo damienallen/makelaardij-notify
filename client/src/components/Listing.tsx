@@ -21,6 +21,7 @@ const useStyles = makeStyles((theme: Theme) =>
         },
         right: {
             flex: 0,
+            textDecoration: 'none',
         },
         address: {
             color: theme.palette.text.primary,
