@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "makenote"
+name = "makenot"
 version = "0.1.0"
 description = ""
 authors = ["Damien Allen <dev@dallen.co>"]

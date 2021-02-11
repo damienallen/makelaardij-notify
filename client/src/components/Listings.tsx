@@ -31,22 +31,24 @@ export const Listings: React.FC = observer(() => {
         const listing = apartments.list[i]
         listItems.push(
             <ListItem key={`listing-${i}`} alignItems="flex-start">
-                <ListItemText
-                    primary={listing.address}
-                    secondary={
-                        <React.Fragment>
-                            <Typography
-                                component="span"
-                                variant="body2"
-                                className={classes.inline}
-                                color="textPrimary"
-                            >
-                                {`€${listing.asking_price / 1000}K`}
-                            </Typography>
-                            {` - ${dayjs(listing.listing_added).format()}`}
-                        </React.Fragment>
-                    }
-                />
+                <a href={listing.listing_url}>
+                    <ListItemText
+                        primary={listing.address}
+                        secondary={
+                            <React.Fragment>
+                                <Typography
+                                    component="span"
+                                    variant="body2"
+                                    className={classes.inline}
+                                    color="textPrimary"
+                                >
+                                    {`€${listing.asking_price / 1000}K`}
+                                </Typography>
+                                {` - ${dayjs(listing.listing_added).format()}`}
+                            </React.Fragment>
+                        }
+                    />
+                </a>
             </ListItem>
         )
         if (i < numListings - 1) {
