@@ -1,5 +1,6 @@
 import React from 'react'
 import dayjs from 'dayjs'
+// import relativeTime from 'dayjs/plugin/relativeTime'
 import { createStyles, Theme, makeStyles } from '@material-ui/core/styles'
 import { ListItem, Link } from '@material-ui/core'
 
@@ -21,7 +22,9 @@ const useStyles = makeStyles((theme: Theme) =>
         },
         right: {
             flex: 0,
-            textDecoration: 'none',
+            '& a:hover': {
+                textDecoration: 'none',
+            },
         },
         address: {
             color: theme.palette.text.primary,
@@ -49,6 +52,7 @@ type Props = {
 
 export const Listing: React.FC<Props> = ({ listing }) => {
     const classes = useStyles()
+    // dayjs.extend(relativeTime)
 
     return (
         <ListItem alignItems="flex-start" classes={{ root: classes.root }}>
@@ -64,7 +68,10 @@ export const Listing: React.FC<Props> = ({ listing }) => {
                     <div className={classes.price}>{`€${Math.ceil(
                         listing.asking_price / 1000
                     )} K`}</div>
-                    <div className={classes.added}>{dayjs(listing.added).format()}</div>
+                    <div className={classes.added}>
+                        {dayjs(Date.parse(listing.added)).format('DD/MM/YYYY')}
+                        {/* {dayjs().from(dayjs(Date.parse(listing.added)).format('DD/MM/YYYY'))} */}
+                    </div>
                 </Link>
             </div>
         </ListItem>

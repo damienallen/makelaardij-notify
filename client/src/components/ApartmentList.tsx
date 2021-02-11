@@ -1,12 +1,22 @@
 import React from 'react'
 import { observer } from 'mobx-react'
+import { createStyles, Theme, makeStyles } from '@material-ui/core/styles'
 import { Divider, List } from '@material-ui/core'
 
 import { Listing } from './Listing'
 import { useStores } from '../stores'
 
+const useStyles = makeStyles((theme: Theme) =>
+    createStyles({
+        list: {
+            marginBottom: 32,
+        },
+    })
+)
+
 export const ApartmentList: React.FC = observer(() => {
     const { apartments } = useStores()
+    const classes = useStyles()
 
     const numListings = apartments.list.length
     let listItems = []
@@ -17,5 +27,5 @@ export const ApartmentList: React.FC = observer(() => {
         }
     }
 
-    return <List>{listItems}</List>
+    return <List className={classes.list}>{listItems}</List>
 })

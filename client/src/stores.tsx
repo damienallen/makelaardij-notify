@@ -33,6 +33,9 @@ export class ApartmentStore {
 
     @action setList(value: Apartment[]) {
         this.list = value
+        this.list.sort((a: Apartment, b: Apartment) => {
+            return Date.parse(b.added) - Date.parse(a.added)
+        })
     }
 
     fetch() {
