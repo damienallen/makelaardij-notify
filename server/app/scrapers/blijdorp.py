@@ -3,7 +3,7 @@ import re
 from datetime import datetime
 from random import randint
 from time import sleep
-from typing import List
+from typing import List, Union
 
 import httpx
 from app.common import months_nl
@@ -38,12 +38,10 @@ async def main():
         else:
             break
 
-    print(f"Scrapped {len(apartment_urls)} listings, fethcing...")
+    print(f"Scraped {len(apartment_urls)} listings, fetching...")
 
     for url in apartment_urls:
-        listing = await engine.find_one(
-            Apartment, Apartment.listing_url == f"{BASE_URL}{url}"
-        )
+        listing = await engine.find_one(Apartment, Apartment.url == f"{BASE_URL}{url}")
 
         if listing is None:
             listing_data = await scrape_item(url)
@@ -53,8 +51,6 @@ async def main():
 
         else:
             print(f"Skipping '{listing.address}', already in DB")
-
-    print("Done!")
 
 
 async def scrape_page(index: int) -> List[str]:
@@ -105,7 +101,7 @@ async def scrape_item(item_url: str):
     features = soup.find_all("div", {"class": ["table-responsive", "feautures"]})
 
     item_data = extract_features(features)
-    item_data["listing_url"] = url
+    item_data["url"] = url
 
     # Address
     address = soup.find("h1", {"class": "obj_address"})
@@ -176,12 +172,15 @@ def extract_features(features):
             "num_floors": num_floors,
             "parking": raw_data.get("Parkeergelegenheid"),
         },
-        "listing_added": find_date(raw_data["Aangeboden sinds"]),
-        "listing_updated": find_date(raw_data["Laatste wijziging"]),
+        "added": find_date(raw_data.get("Aangeboden sinds")),
+        "updated": find_date(raw_data.get("Laatste wijziging")),
     }
 
 
-def find_date(date_str: str) -> datetime:
+def find_date(date_str: Union[str, None]) -> datetime:
+    if not date_str:
+        return None
+
     date = date_str.split(" ")
     return datetime(
         year=int(date[3]), month=months_nl[date[2].lower()], day=int(date[1])

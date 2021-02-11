@@ -36,7 +36,7 @@ class Apartment(Model):
     uuid: str
     asking_price: int
     address: str
-    listing_url: str
+    url: str
     photos: List[str] = Field(default_factory=list)
     available: bool = True
     hidden: bool = False
@@ -46,5 +46,5 @@ class Apartment(Model):
 
     entry_added: datetime = Field(default_factory=datetime.utcnow)
     entry_updated: datetime = Field(default_factory=datetime.utcnow)
-    listing_added: Optional[datetime] = None
-    lsting_updated: Optional[datetime] = None
+    added: Optional[datetime] = None
+    updated: Optional[datetime] = None

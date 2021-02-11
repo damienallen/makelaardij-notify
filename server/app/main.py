@@ -54,7 +54,8 @@ async def clear_apartments(request: Request):
 
     # Remove apartments
     apartments = await engine.find(Apartment)
-    await engine.delete(apartments)
+    for a in apartments:
+        await engine.delete(a)
     return {"detail": "All apartments removed from collection"}
 
 

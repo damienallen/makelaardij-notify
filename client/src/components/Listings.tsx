@@ -31,7 +31,7 @@ export const Listings: React.FC = observer(() => {
         const listing = apartments.list[i]
         listItems.push(
             <ListItem key={`listing-${i}`} alignItems="flex-start">
-                <a href={listing.listing_url}>
+                <a href={listing.url}>
                     <ListItemText
                         primary={listing.address}
                         secondary={
@@ -44,7 +44,7 @@ export const Listings: React.FC = observer(() => {
                                 >
                                     {`€${listing.asking_price / 1000}K`}
                                 </Typography>
-                                {` - ${dayjs(listing.listing_added).format()}`}
+                                {` - ${dayjs(listing.added).format()}`}
                             </React.Fragment>
                         }
                     />
