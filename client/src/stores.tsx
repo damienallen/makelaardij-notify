@@ -42,7 +42,7 @@ export class ApartmentStore {
 
     @computed get filteredList() {
         const query = this.root.filters.query.toLowerCase()
-        if (query.length < 3) {
+        if (query.length > 1) {
             return this.list.filter((a: Apartment) => {
                 return (
                     a.makelaardij.toLowerCase().includes(query) ||

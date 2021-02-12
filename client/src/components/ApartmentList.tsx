@@ -8,9 +8,7 @@ import { useStores } from '../stores'
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
-        list: {
-            marginBottom: 32,
-        },
+        list: {},
     })
 )
 
