@@ -38,7 +38,7 @@ async def main():
             break
         skip_index += 1
 
-    print(f"Scraped {len(apartment_urls)} listings, fetching...")
+    print(f"[{datetime.now().isoformat(' ', 'seconds')}] {MAKELAARDIJ} | Scraped {len(apartment_urls)} listings")
 
     for url in apartment_urls:
         listing = await engine.find_one(Apartment, Apartment.url == f"{BASE_URL}{url}")
@@ -49,17 +49,17 @@ async def main():
             await engine.save(apartment)
             sleep(get_interval(LISTING_DELAY, JITTER))
 
-        else:
-            print(f"Skipping '{listing.address}', already in DB")
+        # else:
+        #     print(f"Skipping '{listing.address}', already in DB")
 
 
 async def scrape_page(index: int) -> List[str]:
     url = f"{BASE_URL}/woningaanbod/koop/{CITY}?skip={index*10}"
 
-    print(f"({index}) {url} ", end="")
+    # print(f"({index}) {url} ", end="")
     async with httpx.AsyncClient() as client:
         result = await client.get(url)
-    print(f"[{result.status_code}]")
+    # print(f"[{result.status_code}]")
 
     # Check for good status
     if result.status_code == 404:
@@ -85,7 +85,7 @@ async def scrape_item(item_url: str):
     url = f"{BASE_URL}{item_url}"
     url_parts = item_url.split("/")
 
-    print(f"+ {url_parts[-2]} {url_parts[-1]} ", end="")
+    print(f"[{datetime.now().isoformat(' ', 'seconds')}] {MAKELAARDIJ} + {url_parts[-2]} {url_parts[-1]} ", end="")
     async with httpx.AsyncClient() as client:
         result = await client.get(url)
     print(f"[{result.status_code}]")
