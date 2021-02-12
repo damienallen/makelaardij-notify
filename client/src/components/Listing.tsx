@@ -4,7 +4,7 @@ import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import { createStyles, Theme, makeStyles } from '@material-ui/core/styles'
 import { ListItem, Link } from '@material-ui/core'
-import { BiArea, BiHomeAlt, BiPurchaseTag } from 'react-icons/bi'
+import { BiArea, BiHomeAlt, BiPurchaseTag, BiRightArrow } from 'react-icons/bi'
 
 import { Apartment } from '../stores'
 
@@ -19,7 +19,7 @@ const useStyles = makeStyles((theme: Theme) =>
                 backgroundColor: theme.palette.secondary.main,
             },
             '& svg': {
-                paddingTop: 2,
+                paddingTop: 3,
                 marginRight: 2,
                 verticalAlign: 'baseline',
             },
@@ -59,6 +59,7 @@ const useStyles = makeStyles((theme: Theme) =>
         },
         available: {
             color: theme.palette.success.main,
+            marginLeft: theme.spacing(1),
         },
     })
 )
@@ -81,7 +82,10 @@ export const Listing: React.FC<Props> = ({ listing }) => {
                     <div className={classes.makelaardij}>
                         {listing.makelaardij}
                         {listing.available ? (
-                            <span className={classes.available}>Available</span>
+                            <span className={classes.available}>
+                                <BiRightArrow />
+                                Available
+                            </span>
                         ) : null}
                     </div>
                     <div className={classes.meta}>
