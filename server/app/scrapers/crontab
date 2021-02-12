@@ -1,0 +1,1 @@
+*/10 * * * * cd /home/damien/mothership/makelaardij-notify/server && /home/damien/.cache/pypoetry/virtualenvs/makenot-vTuAG9By-py3.8/bin/python -m app.scrapers.blijdorp > /home/damien/scrapers.log 2>&1
