@@ -1,8 +1,10 @@
 import React from 'react'
 import { observer } from 'mobx-react'
 import { createStyles, fade, Theme, makeStyles } from '@material-ui/core/styles'
-import { InputBase } from '@material-ui/core'
+import { Input } from '@material-ui/core'
 import { BiSearch } from 'react-icons/bi'
+
+import { useStores } from '../stores'
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -49,6 +51,7 @@ const useStyles = makeStyles((theme: Theme) =>
 )
 
 export const Search: React.FC = observer(() => {
+    const { filters } = useStores()
     const classes = useStyles()
 
     return (
@@ -56,8 +59,10 @@ export const Search: React.FC = observer(() => {
             <div className={classes.searchIcon}>
                 <BiSearch />
             </div>
-            <InputBase
+            <Input
                 placeholder="Search…"
+                value={filters.query}
+                onChange={(e: any) => filters.setQuery(e.target.value)}
                 classes={{
                     root: classes.inputRoot,
                     input: classes.inputInput,

@@ -10,11 +10,13 @@ import { lightTheme, darkTheme } from './theme'
 
 export class RootStore {
     public apartments: ApartmentStore
+    public filters: FilterStore
     public ui: UIStore
     public settings: SettingStore
 
     constructor() {
         this.apartments = new ApartmentStore(this)
+        this.filters = new FilterStore(this)
         this.ui = new UIStore(this)
         this.settings = new SettingStore(this)
     }
@@ -38,6 +40,20 @@ export class ApartmentStore {
         })
     }
 
+    @computed get filteredList() {
+        const query = this.root.filters.query.toLowerCase()
+        if (query.length < 3) {
+            return this.list.filter((a: Apartment) => {
+                return (
+                    a.makelaardij.toLowerCase().includes(query) ||
+                    a.address.toLowerCase().includes(query)
+                )
+            })
+        } else {
+            return this.list
+        }
+    }
+
     fetch() {
         const url = `${this.root.settings.host}/apartments/`
         console.log(`[GET] ${url}`)
@@ -49,6 +65,18 @@ export class ApartmentStore {
             .catch((error: AxiosError) => {
                 console.error(error.response)
             })
+    }
+
+    constructor(public root: RootStore) {
+        makeObservable(this)
+    }
+}
+
+export class FilterStore {
+    @observable query: string = ''
+
+    @action setQuery(value: string) {
+        this.query = value
     }
 
     constructor(public root: RootStore) {

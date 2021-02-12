@@ -18,10 +18,10 @@ export const ApartmentList: React.FC = observer(() => {
     const { apartments } = useStores()
     const classes = useStyles()
 
-    const numListings = apartments.list.length
+    const numListings = apartments.filteredList.length
     let listItems = []
     for (let i = 0; i < numListings; i++) {
-        listItems.push(<Listing key={`listing-${i}`} listing={apartments.list[i]} />)
+        listItems.push(<Listing key={`listing-${i}`} listing={apartments.filteredList[i]} />)
         if (i < numListings - 1) {
             listItems.push(<Divider key={`divider-${i}`} component="li" />)
         }

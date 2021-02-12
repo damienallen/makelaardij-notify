@@ -51,7 +51,7 @@ export const Listing: React.FC<Props> = ({ listing }) => {
     const classes = useStyles()
     dayjs.extend(relativeTime)
 
-    console.log(toJS(listing))
+    console.debug(toJS(listing))
 
     return (
         <ListItem alignItems="flex-start" classes={{ root: classes.root }}>
