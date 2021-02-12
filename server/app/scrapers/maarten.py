@@ -11,8 +11,9 @@ from app.models import Apartment
 from bs4 import BeautifulSoup
 from odmantic import AIOEngine
 
-BASE_URL = "https://www.blijdorpmakelaardij.nl"
-MAKELAARDIJ = "blijdorp"
+BASE_URL = "https://www.maartenmakelaardij.nl"
+MAKELAARDIJ = "maarten"
+QUERY = "#q1YqyElMLClWslIqyi8pSS1KScxV0lHKLyhILSrLScwuSQXKmBrompsCRQuKMrOAKquVcjPzgMKGBiAAFM9NrAByTUzB3FodpfL8_DwsxtYCAA"
 CITY = "rotterdam"
 
 PAGE_DELAY = 2
@@ -25,38 +26,28 @@ engine = AIOEngine(database="aanbod")
 async def main():
     print("Starting scraper")
 
-    apartment_urls = []
-    skip_limit = 10
-    skip_index = 0
-
-    while skip_index < skip_limit:
-        index_urls = await scrape_page(skip_index)
-        if index_urls:
-            apartment_urls += index_urls
-            sleep(get_interval(PAGE_DELAY, JITTER))
-        else:
-            break
-        skip_index += 1
+    apartment_urls = await scrape_page()
+    sleep(get_interval(PAGE_DELAY, JITTER))
 
     print(f"[{datetime.now().isoformat(' ', 'seconds')}] {MAKELAARDIJ} | Scraped {len(apartment_urls)} listings")
 
-    for url in apartment_urls:
-        listing = await engine.find_one(Apartment, Apartment.url == f"{BASE_URL}{url}")
+    # for url in apartment_urls:
+    #     listing = await engine.find_one(Apartment, Apartment.url == f"{BASE_URL}{url}")
 
-        if listing is None:
-            listing_data = await scrape_item(url)
-            apartment = Apartment.parse_obj(listing_data)
-            await engine.save(apartment)
-            sleep(get_interval(LISTING_DELAY, JITTER))
+    #     if listing is None:
+    #         listing_data = await scrape_item(url)
+    #         apartment = Apartment.parse_obj(listing_data)
+    #         await engine.save(apartment)
+    #         sleep(get_interval(LISTING_DELAY, JITTER))
 
-        # else:
-        #     print(f"Skipping '{listing.address}', already in DB")
+    #     else:
+    #         print(f"Skipping '{listing.address}', already in DB")
 
 
-async def scrape_page(index: int) -> List[str]:
-    url = f"{BASE_URL}/woningaanbod/koop/{CITY}?skip={index*10}&minlivablearea=70"
+async def scrape_page() -> List[str]:
+    url = f"{BASE_URL}/aanbod/{CITY}/{QUERY}"
 
-    print(f"({index}) {url} ", end="")
+    print(url, end="")
     async with httpx.AsyncClient() as client:
         result = await client.get(url)
     print(f"[{result.status_code}]")
@@ -70,15 +61,15 @@ async def scrape_page(index: int) -> List[str]:
 
     # Extract HTML
     soup = BeautifulSoup(result.content, "html.parser")
-    items = soup.find_all("a", {"class": "object_data_container"})
+    items = soup.find_all("a")
 
     # Extract apartment object urls
     urls = []
     for item in items:
-        item_url = item["href"].split("?")[0]
-        urls.append(item_url)
+        if "woning/rotterdam-" in item["href"]:
+            urls.append(item["href"])
 
-    return urls
+    return list(set(urls))
 
 
 async def scrape_item(item_url: str):
