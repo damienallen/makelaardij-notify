@@ -6,3 +6,4 @@ GET https://aanbod.dallen.dev/api/apartments/ HTTP/1.1
 
 ### Clear apartments
 GET https://aanbod.dallen.dev/api/apartments/clear/ HTTP/1.1
+Master: dev_token

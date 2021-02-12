@@ -28,12 +28,12 @@ class Unit(EmbeddedModel):
     own_land: Optional[bool] = None
     num_bathrooms: Optional[int] = None
     num_rooms: Optional[int] = None
+    num_floors: Optional[int] = None
     tags: List[str] = Field(default_factory=list)
 
 
 class Apartment(Model):
     makelaardij: str
-    uuid: str
     asking_price: int
     address: str
     url: str

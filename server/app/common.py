@@ -1,3 +1,26 @@
+import re
+from random import randint
+
+
+def find_int(value: str) -> int:
+    return int(re.sub(r"[^0-9]", "", value)) if value is not None else None
+
+
+def find_float(value: str) -> float:
+    return (
+        float(re.sub(r"[^0-9.,]", "", value).replace(",", "."))
+        if value is not None
+        else None
+    )
+
+
+def get_interval(base_value: int, jitter: int) -> float:
+    """
+    Randomized sleep intervals
+    """
+    return base_value + randint(-jitter * 10, jitter * 10) / 10
+
+
 months_nl = {
     "januari": 1,
     "februari": 2,

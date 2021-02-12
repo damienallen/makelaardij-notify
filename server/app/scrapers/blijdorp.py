@@ -1,12 +1,11 @@
 import asyncio
 import re
 from datetime import datetime
-from random import randint
 from time import sleep
 from typing import List, Union
 
 import httpx
-from app.common import months_nl
+from app.common import find_float, find_int, get_interval, months_nl
 from app.models import Apartment
 from bs4 import BeautifulSoup
 from odmantic import AIOEngine
@@ -38,7 +37,9 @@ async def main():
             break
         skip_index += 1
 
-    print(f"[{datetime.now().isoformat(' ', 'seconds')}] {MAKELAARDIJ} | Scraped {len(apartment_urls)} listings")
+    print(
+        f"[{datetime.now().isoformat(' ', 'seconds')}] {MAKELAARDIJ} | Scraped {len(apartment_urls)} listings"
+    )
 
     for url in apartment_urls:
         listing = await engine.find_one(Apartment, Apartment.url == f"{BASE_URL}{url}")
@@ -65,7 +66,7 @@ async def scrape_page(index: int) -> List[str]:
     if result.status_code == 404:
         return []
     elif not result.status_code == 200:
-        print(f"Error: {result.reason}")
+        print(f"Error: {result}")
         return []
 
     # Extract HTML
@@ -85,7 +86,10 @@ async def scrape_item(item_url: str):
     url = f"{BASE_URL}{item_url}"
     url_parts = item_url.split("/")
 
-    print(f"[{datetime.now().isoformat(' ', 'seconds')}] {MAKELAARDIJ} + {url_parts[-2]} {url_parts[-1]} ", end="")
+    print(
+        f"[{datetime.now().isoformat(' ', 'seconds')}] {MAKELAARDIJ} + {url_parts[-2]} {url_parts[-1]} ",
+        end="",
+    )
     async with httpx.AsyncClient() as client:
         result = await client.get(url)
     print(f"[{result.status_code}]")
@@ -94,7 +98,7 @@ async def scrape_item(item_url: str):
     if result.status_code == 404:
         print("Warning, property skipped, not found")
     elif not result.status_code == 200:
-        raise Exception(f"Error: {result.reason}")
+        raise Exception(f"Error: {result}")
 
     # Extract HTML
     soup = BeautifulSoup(result.content, "html.parser")
@@ -148,18 +152,17 @@ def extract_features(features):
 
     return {
         "makelaardij": MAKELAARDIJ,
-        "uuid": raw_data["Referentienummer"],
         "asking_price": find_int(raw_data["Vraagprijs"]),
         "available": "Status" not in raw_data,
         "unit": {
-            "area": find_int(raw_data["Gebruiksoppervlakte wonen"]),
-            "volume": find_int(raw_data["Inhoud"]),
+            "area": find_float(raw_data["Gebruiksoppervlakte wonen"]),
+            "volume": find_float(raw_data["Inhoud"]),
             "energy": {
                 "heating": raw_data.get("Verwarmingssysteem"),
                 "water": raw_data.get("Warm water"),
                 "label": raw_data.get("Energielabel"),
             },
-            "vve_cost": find_int(raw_data.get("Servicekosten")),
+            "vve_cost": find_float(raw_data.get("Servicekosten")),
             "own_land": own_land,
             "num_bathrooms": find_int(raw_data["Aantal badkamers"]),
             "num_rooms": num_rooms,
@@ -178,7 +181,7 @@ def extract_features(features):
     }
 
 
-def find_date(date_str: Union[str, None]) -> datetime:
+def find_date(date_str: Union[str, None]) -> Union[datetime, None]:
     if not date_str:
         return None
 
@@ -199,17 +202,6 @@ def find_tags(raw_data) -> List[str]:
     if raw_data.get("Heeft een lift") == "Ja":
         tags.append("lift")
     return tags
-
-
-def find_int(value: str) -> int:
-    return int(re.sub(r"[^0-9]", "", value)) if value is not None else None
-
-
-def get_interval(base_value: float, jitter: float) -> float:
-    """
-    Randomized sleep intervals
-    """
-    return base_value + randint(-jitter * 10, jitter * 10) / 10
 
 
 if __name__ == "__main__":

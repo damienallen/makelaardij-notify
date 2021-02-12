@@ -6,17 +6,16 @@ from time import sleep
 from typing import List, Union
 
 import httpx
-from app.common import months_nl
+from app.common import find_float, find_int, get_interval
 from app.models import Apartment
 from bs4 import BeautifulSoup
 from odmantic import AIOEngine
 
 BASE_URL = "https://www.maartenmakelaardij.nl"
 MAKELAARDIJ = "maarten"
-QUERY = "#q1YqyElMLClWslIqyi8pSS1KScxV0lHKLyhILSrLScwuSQXKmBrompsCRQuKMrOAKquVcjPzgMKGBiAAFM9NrAByTUzB3FodpfL8_DwsxtYCAA"
 CITY = "rotterdam"
 
-PAGE_DELAY = 2
+PAGE_DELAY = 1
 LISTING_DELAY = 2
 JITTER = 2
 
@@ -27,25 +26,27 @@ async def main():
     print("Starting scraper")
 
     apartment_urls = await scrape_page()
-    sleep(get_interval(PAGE_DELAY, JITTER))
+    sleep(PAGE_DELAY)
 
-    print(f"[{datetime.now().isoformat(' ', 'seconds')}] {MAKELAARDIJ} | Scraped {len(apartment_urls)} listings")
+    print(
+        f"[{datetime.now().isoformat(' ', 'seconds')}] {MAKELAARDIJ} | Scraped {len(apartment_urls)} listings"
+    )
 
-    # for url in apartment_urls:
-    #     listing = await engine.find_one(Apartment, Apartment.url == f"{BASE_URL}{url}")
+    for url in apartment_urls:
+        listing = await engine.find_one(Apartment, Apartment.url == f"{url}")
 
-    #     if listing is None:
-    #         listing_data = await scrape_item(url)
-    #         apartment = Apartment.parse_obj(listing_data)
-    #         await engine.save(apartment)
-    #         sleep(get_interval(LISTING_DELAY, JITTER))
+        if listing is None:
+            listing_data = await scrape_item(url)
+            apartment = Apartment.parse_obj(listing_data)
+            await engine.save(apartment)
+            sleep(get_interval(LISTING_DELAY, JITTER))
 
-    #     else:
-    #         print(f"Skipping '{listing.address}', already in DB")
+        else:
+            print(f"Skipping '{listing.address}', already in DB")
 
 
 async def scrape_page() -> List[str]:
-    url = f"{BASE_URL}/aanbod/{CITY}/{QUERY}"
+    url = f"{BASE_URL}/aanbod/{CITY}/ "
 
     print(url, end="")
     async with httpx.AsyncClient() as client:
@@ -56,7 +57,7 @@ async def scrape_page() -> List[str]:
     if result.status_code == 404:
         return []
     elif not result.status_code == 200:
-        print(f"Error: {result.reason}")
+        print(f"Error: {result}")
         return []
 
     # Extract HTML
@@ -73,134 +74,85 @@ async def scrape_page() -> List[str]:
 
 
 async def scrape_item(item_url: str):
-    url = f"{BASE_URL}{item_url}"
-    url_parts = item_url.split("/")
+    addr = item_url.split("/")[-2].split("rotterdam-")[1].replace("-", " ")
 
-    print(f"[{datetime.now().isoformat(' ', 'seconds')}] {MAKELAARDIJ} + {url_parts[-2]} {url_parts[-1]} ", end="")
+    print(
+        f"[{datetime.now().isoformat(' ', 'seconds')}] {MAKELAARDIJ} + {addr} ", end=""
+    )
     async with httpx.AsyncClient() as client:
-        result = await client.get(url)
+        result = await client.get(item_url)
     print(f"[{result.status_code}]")
 
     # Check for good status
     if result.status_code == 404:
         print("Warning, property skipped, not found")
     elif not result.status_code == 200:
-        raise Exception(f"Error: {result.reason}")
+        raise Exception(f"Error: {result}")
 
     # Extract HTML
     soup = BeautifulSoup(result.content, "html.parser")
-    photos = soup.find_all("img", {"class": "content"})
-    features = soup.find_all("div", {"class": ["table-responsive", "feautures"]})
 
-    item_data = extract_features(features)
-    item_data["url"] = url
-
-    # Address
-    address = soup.find("h1", {"class": "obj_address"})
-    if address:
-        address_str = (
-            address.string.split(": ")[1] if ": " in address.string else address.string
-        ).split(",")
-    item_data["address"] = address_str[0]
-
-    # Photos
-    photo_urls = []
-    for photo in photos:
-        photo_urls.append(photo["src"])
-    item_data["photos"] = photo_urls
+    item_data = extract_features(soup)
+    item_data["url"] = item_url
 
     return item_data
 
 
-def extract_features(features):
+def extract_features(soup):
     """
     Extract feature metadata from listing
     """
-    raw_data = {}
-    for section in features:
-        table_rows = section.find_all("tr")
-        for row in table_rows:
-            row_data = row.find_all("td")
-            if len(row_data) > 1:
-                raw_data[row_data[0].string] = row_data[1].string
-
-    # Harder to extract items
-    own_land = raw_data["Eigendom"] == "Eigendom" if raw_data.get("Eigendom") else None
-
-    num_rooms = None
-    if (rooms_str := raw_data.get("Aantal kamers")) is not None:
-        num_rooms = int(rooms_str.split(" ")[0])
-
-    num_floors = None
-    if "Woonlaag" in raw_data and "e woonlaag" in raw_data["Woonlaag"]:
-        num_floors = int(raw_data["Woonlaag"].split("e")[0])
-
-    tags = find_tags(raw_data)
-
-    return {
+    meta_data = {
         "makelaardij": MAKELAARDIJ,
-        "uuid": raw_data["Referentienummer"],
-        "asking_price": find_int(raw_data["Vraagprijs"]),
-        "available": "Status" not in raw_data,
-        "unit": {
-            "area": find_int(raw_data["Gebruiksoppervlakte wonen"]),
-            "volume": find_int(raw_data["Inhoud"]),
-            "energy": {
-                "heating": raw_data.get("Verwarmingssysteem"),
-                "water": raw_data.get("Warm water"),
-                "label": raw_data.get("Energielabel"),
-            },
-            "vve_cost": find_int(raw_data.get("Servicekosten")),
-            "own_land": own_land,
-            "num_bathrooms": find_int(raw_data["Aantal badkamers"]),
-            "num_rooms": num_rooms,
-            "tags": tags,
-        },
-        "building": {
-            "year_constructed": int(raw_data["Bouwperiode"]),
-            "building_type": raw_data.get("Soort bouw"),
-            "roof_type": raw_data.get("Type dak"),
-            "roof_material": raw_data.get("Dakbedekking"),
-            "num_floors": num_floors,
-            "parking": raw_data.get("Parkeergelegenheid"),
-        },
-        "added": find_date(raw_data.get("Aangeboden sinds")),
-        "updated": find_date(raw_data.get("Laatste wijziging")),
+        "building": {},
+        "unit": {"energy": {}, "tags": []},
     }
 
+    dt = soup.find_all("dt")
+    dd = soup.find_all("dd")
 
-def find_date(date_str: Union[str, None]) -> datetime:
-    if not date_str:
-        return None
+    # Features
+    for ind, key in enumerate(dt):
 
-    date = date_str.split(" ")
-    return datetime(
-        year=int(date[3]), month=months_nl[date[2].lower()], day=int(date[1])
+        if "Bouwjaar" in key.string:
+            meta_data["building"]["year_constructed"] = find_int(dd[ind].string)
+
+        elif "Woonoppervlakte" in key.string:
+            meta_data["unit"]["area"] = find_float(dd[ind].text.split(" ")[0])
+
+        elif "Aantal kamers" in key.string:
+            meta_data["unit"]["num_rooms"] = find_int(dd[ind].text)
+
+        elif "verdiepingen" in key.string:
+            meta_data["unit"]["num_floors"] = find_int(dd[ind].text)
+
+        elif "Status" in key.string:
+            meta_data["available"] = "Beschikbaar" in dd[ind].text
+
+        elif "Buitenruimte" in key.string and "TUIN" in dd[ind].text:
+            meta_data["unit"]["tags"].append("garden")
+
+    # Other fields
+    meta_data["address"] = soup.find("span", {"class": "adres"}).string
+    meta_data["asking_price"] = find_int(
+        soup.find("span", {"class": "price"}).string.replace(".", "")
     )
 
+    description = soup.find("div", {"id": "read-more-content"}).children
+    for p in description:
+        p_text = str(p.text)
+        if "Eigen grond" in p_text:
+            meta_data["unit"]["own_land"] = True
+        elif "erfpacht" in p_text:
+            meta_data["unit"]["own_land"] = False
 
-def find_tags(raw_data) -> List[str]:
-    tags = []
-    if raw_data.get("Tuin aanwezig") == "Ja":
-        tags.append("garden")
-    if raw_data.get("Heeft schuur/berging") == "Ja":
-        tags.append("shed")
-    if raw_data.get("Opstal verzekering") == "Ja":
-        tags.append("theft_insurance")
-    if raw_data.get("Heeft een lift") == "Ja":
-        tags.append("lift")
-    return tags
+        if "Energielabel" in p_text:
+            label = p_text.split("Energielabel: ")[1][0]
+            meta_data["unit"]["energy"]["label"] = label
 
+        break
 
-def find_int(value: str) -> int:
-    return int(re.sub(r"[^0-9]", "", value)) if value is not None else None
-
-
-def get_interval(base_value: float, jitter: float) -> float:
-    """
-    Randomized sleep intervals
-    """
-    return base_value + randint(-jitter * 10, jitter * 10) / 10
+    return meta_data
 
 
 if __name__ == "__main__":
