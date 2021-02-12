@@ -22,12 +22,50 @@ export class RootStore {
     }
 }
 
+export interface Building {
+    year_constructed?: number
+    building_type?: string
+    roof_type?: string
+    roof_material?: string
+    num_floors?: number
+    parking?: string
+}
+
+export interface Energy {
+    heating?: string
+    water?: string
+    label?: string
+}
+
+export interface Unit {
+    area: number
+    volume?: number
+    energy: Energy
+
+    vve_cost?: number
+    own_land?: boolean
+    num_bathrooms?: number
+    num_rooms?: number
+    tags: string[]
+}
+
 export interface Apartment {
-    url: string
-    address: string
-    asking_price: number
-    added: string
     makelaardij: string
+    uuid: string
+    asking_price: number
+    address: string
+    url: string
+    photos: string[]
+    available: boolean
+    hidden: boolean
+
+    unit: Unit
+    building: Building
+
+    entry_added: string
+    entry_updated: string
+    added: string
+    updated?: string
 }
 
 export class ApartmentStore {
