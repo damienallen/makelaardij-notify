@@ -1,4 +1,5 @@
 import React from 'react'
+import { toJS } from 'mobx'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import { createStyles, Theme, makeStyles } from '@material-ui/core/styles'
@@ -15,9 +16,6 @@ const useStyles = makeStyles((theme: Theme) =>
             },
         },
         left: {
-            flex: 1,
-        },
-        center: {
             flex: 1,
         },
         right: {
@@ -53,17 +51,18 @@ export const Listing: React.FC<Props> = ({ listing }) => {
     const classes = useStyles()
     dayjs.extend(relativeTime)
 
+    console.log(toJS(listing))
+
     return (
         <ListItem alignItems="flex-start" classes={{ root: classes.root }}>
             <div className={classes.left}>
-                <Link href={listing.url} color="inherit">
+                <Link href={listing.url} target="_blank" rel="noreferrer" color="inherit">
                     <div className={classes.address}>{listing.address}</div>
                     <div className={classes.makelaardij}>{listing.makelaardij}</div>
                 </Link>
             </div>
-            <div className={classes.center}></div>
             <div className={classes.right}>
-                <Link href={listing.url} color="inherit">
+                <Link href={listing.url} target="_blank" rel="noreferrer" color="inherit">
                     <div className={classes.price}>{`€${Math.ceil(
                         listing.asking_price / 1000
                     )} K`}</div>
