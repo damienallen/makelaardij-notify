@@ -22,8 +22,6 @@ engine = AIOEngine(database="aanbod")
 
 
 async def main():
-    print("Starting scraper")
-
     apartment_urls = []
     skip_limit = 10
     skip_index = 0
@@ -57,10 +55,9 @@ async def main():
 async def scrape_page(index: int) -> List[str]:
     url = f"{BASE_URL}/woningaanbod/koop/{CITY}?skip={index*10}&minlivablearea=70"
 
-    print(f"({index}) {url} ", end="")
+    # print(f"({index}) {url}"")
     async with httpx.AsyncClient() as client:
         result = await client.get(url)
-    print(f"[{result.status_code}]")
 
     # Check for good status
     if result.status_code == 404:

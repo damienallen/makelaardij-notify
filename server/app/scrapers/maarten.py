@@ -23,8 +23,6 @@ engine = AIOEngine(database="aanbod")
 
 
 async def main():
-    print("Starting scraper")
-
     apartment_urls = await scrape_page()
     sleep(PAGE_DELAY)
 
@@ -41,17 +39,16 @@ async def main():
             await engine.save(apartment)
             sleep(get_interval(LISTING_DELAY, JITTER))
 
-        else:
-            print(f"Skipping '{listing.address}', already in DB")
+        # else:
+        #     print(f"Skipping '{listing.address}', already in DB")
 
 
 async def scrape_page() -> List[str]:
     url = f"{BASE_URL}/aanbod/{CITY}/ "
 
-    print(url, end="")
+    # print(url)
     async with httpx.AsyncClient() as client:
         result = await client.get(url)
-    print(f"[{result.status_code}]")
 
     # Check for good status
     if result.status_code == 404:
