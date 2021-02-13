@@ -4,7 +4,7 @@ import { createStyles, Theme, makeStyles } from '@material-ui/core/styles'
 import { ListItem, Slider } from '@material-ui/core'
 import { BiHomeAlt } from 'react-icons/bi'
 
-import { useStores } from '../../stores'
+import { useStores, minYear, maxYear } from '../../stores'
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -53,8 +53,8 @@ export const YearRange: React.FC = observer(() => {
                     onChange={setYearRange}
                     step={10}
                     marks={marks}
-                    min={1900}
-                    max={2020}
+                    min={minYear}
+                    max={maxYear}
                     valueLabelDisplay="auto"
                     getAriaValueText={valuetext}
                 />

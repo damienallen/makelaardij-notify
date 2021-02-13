@@ -4,7 +4,7 @@ import { createStyles, Theme, makeStyles } from '@material-ui/core/styles'
 import { ListItem, Slider } from '@material-ui/core'
 import { BiEuro } from 'react-icons/bi'
 
-import { useStores } from '../../stores'
+import { useStores, minPrice, maxPrice } from '../../stores'
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -57,8 +57,8 @@ export const PriceRange: React.FC = observer(() => {
                     onChange={setPriceRange}
                     step={10}
                     marks={marks}
-                    min={150}
-                    max={500}
+                    min={minPrice}
+                    max={maxPrice}
                     valueLabelDisplay="auto"
                     getAriaValueText={valuetext}
                 />

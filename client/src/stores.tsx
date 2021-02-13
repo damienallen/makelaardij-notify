@@ -84,15 +84,7 @@ export class ApartmentStore {
     }
 
     @computed get filteredList() {
-        const query = this.root.filters.query.toLowerCase()
-        return this.list.filter((a: Apartment) => {
-            const queryMatch =
-                query.length > 1
-                    ? a.makelaardij.toLowerCase().includes(query) ||
-                      a.address.toLowerCase().includes(query)
-                    : true
-            return queryMatch && (a.available || a.added)
-        })
+        return this.list.filter((a: Apartment) => this.root.filters.matchesFilter(a))
     }
 
     fetch() {
@@ -113,15 +105,62 @@ export class ApartmentStore {
     }
 }
 
+export const minPrice = 150
+export const maxPrice = 500
+
+export const minArea = 50
+export const maxArea = 125
+
+export const minYear = 1900
+export const maxYear = 2020
+
 export class FilterStore {
     @observable query: string = ''
 
-    @observable priceRange: number[] = [0, 500]
-    @observable area: number = 125
-    @observable yearRange: number[] = [1900, 2020]
+    @observable priceRange: number[] = [minPrice, maxPrice]
+    @observable areaRange: number[] = [minArea, maxArea]
+    @observable yearRange: number[] = [minYear, maxYear]
 
     @observable available: boolean = true
     @observable sold: boolean = false
+
+    matchesFilter(a: Apartment) {
+        const query = this.query.toLowerCase()
+        const queryMatch =
+            query.length > 1
+                ? a.makelaardij.toLowerCase().includes(query) ||
+                  a.address.toLowerCase().includes(query)
+                : true
+
+        const aboveMinPrice =
+            this.priceRange[0] <= minPrice ? true : a.asking_price > this.priceRange[0]
+        const belowMaxPrice =
+            this.priceRange[1] >= maxPrice ? true : a.asking_price < this.priceRange[1]
+        const priceRangeMatch = aboveMinPrice && belowMaxPrice
+
+        const aboveMinArea = this.areaRange[0] <= minArea ? true : a.unit.area > this.areaRange[0]
+        const belowMaxArea = this.areaRange[1] >= maxArea ? true : a.unit.area < this.areaRange[1]
+        const areaRangeMatch = aboveMinArea && belowMaxArea
+
+        let yearRangeMatch = true
+        if (a.building.year_constructed) {
+            const aboveMinYear =
+                this.yearRange[0] <= minYear
+                    ? true
+                    : a.building.year_constructed > this.yearRange[0]
+            const belowMaxYear =
+                this.yearRange[1] >= maxYear
+                    ? true
+                    : a.building.year_constructed < this.yearRange[1]
+            yearRangeMatch = aboveMinYear && belowMaxYear
+        }
+
+        return (
+            queryMatch && priceRangeMatch && areaRangeMatch && yearRangeMatch
+            // this.root.filters.available === Boolean(a.available) &&
+            // this.root.filters.sold === Boolean(a.available)
+        )
+    }
 
     @action setQuery(value: string) {
         this.query = value
@@ -132,9 +171,9 @@ export class FilterStore {
         this.root.cookies.set('priceRange', value)
     }
 
-    @action setArea(value: number) {
-        this.area = value
-        this.root.cookies.set('area', value)
+    @action setAreaRange(value: number[]) {
+        this.areaRange = value
+        this.root.cookies.set('areaRange', value)
     }
 
     @action setYearRange(value: number[]) {
@@ -158,8 +197,8 @@ export class FilterStore {
         const priceRange = root.cookies.get('priceRange')
         if (priceRange) this.setPriceRange(priceRange)
 
-        const area = root.cookies.get('area')
-        if (area) this.setArea(area)
+        const areaRange = root.cookies.get('areaRange')
+        if (areaRange) this.setAreaRange(areaRange)
 
         const yearRange = root.cookies.get('yearRange')
         if (yearRange) this.setYearRange(yearRange)

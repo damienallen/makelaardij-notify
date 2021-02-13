@@ -4,7 +4,7 @@ import { createStyles, Theme, makeStyles } from '@material-ui/core/styles'
 import { ListItem, Slider } from '@material-ui/core'
 import { BiArea } from 'react-icons/bi'
 
-import { useStores } from '../../stores'
+import { useStores, minArea, maxArea } from '../../stores'
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -19,12 +19,12 @@ const useStyles = makeStyles((theme: Theme) =>
     })
 )
 
-export const Area: React.FC = observer(() => {
+export const AreaRange: React.FC = observer(() => {
     const { filters } = useStores()
     const classes = useStyles()
 
     const setArea = (event: any, value: number | number[]) => {
-        filters.setArea(value as number)
+        filters.setAreaRange(value as number[])
     }
 
     const valuetext = (value: number) => {
@@ -49,12 +49,12 @@ export const Area: React.FC = observer(() => {
             </div>
             <div className={classes.slider}>
                 <Slider
-                    value={filters.area}
+                    value={filters.areaRange}
                     onChange={setArea}
                     step={10}
                     marks={marks}
-                    min={50}
-                    max={125}
+                    min={minArea}
+                    max={maxArea}
                     valueLabelDisplay="auto"
                     getAriaValueText={valuetext}
                 />
