@@ -73,6 +73,13 @@ export const Listing: React.FC<Props> = ({ listing }) => {
     dayjs.extend(relativeTime)
 
     console.debug(toJS(listing))
+    const listDate = listing.added ? Date.parse(listing.added) : Date.parse(listing.entry_added)
+    const energyLabel = listing.unit.energy.label ? (
+        <span>
+            <BiPurchaseTag />
+            {listing.unit.energy.label}
+        </span>
+    ) : null
 
     return (
         <ListItem alignItems="flex-start" classes={{ root: classes.root }}>
@@ -94,13 +101,10 @@ export const Listing: React.FC<Props> = ({ listing }) => {
                             {listing.building.year_constructed}
                         </span>
                         <span>
-                            <BiPurchaseTag />
-                            {listing.unit.energy.label}
-                        </span>
-                        <span>
                             <BiArea />
                             {listing.unit.area} m&sup2;
                         </span>
+                        {energyLabel}
                     </div>
                 </Link>
             </div>
@@ -110,9 +114,7 @@ export const Listing: React.FC<Props> = ({ listing }) => {
                     <div className={classes.areaPrice}>
                         €{Math.ceil(listing.asking_price / listing.unit.area)}/m&sup2;
                     </div>
-                    <div className={classes.added}>
-                        {dayjs(Date.parse(listing.added)).fromNow()}
-                    </div>
+                    <div className={classes.added}>{dayjs(listDate).fromNow()}</div>
                 </Link>
             </div>
         </ListItem>

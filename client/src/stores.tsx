@@ -74,22 +74,24 @@ export class ApartmentStore {
     @action setList(value: Apartment[]) {
         this.list = value
         this.list.sort((a: Apartment, b: Apartment) => {
-            return Date.parse(b.added) - Date.parse(a.added)
+            return this.getSortDate(b) - this.getSortDate(a)
         })
+    }
+
+    getSortDate(a: Apartment) {
+        return a.added ? Date.parse(a.added) : Date.parse(a.entry_added)
     }
 
     @computed get filteredList() {
         const query = this.root.filters.query.toLowerCase()
-        if (query.length > 1) {
-            return this.list.filter((a: Apartment) => {
-                return (
-                    a.makelaardij.toLowerCase().includes(query) ||
-                    a.address.toLowerCase().includes(query)
-                )
-            })
-        } else {
-            return this.list
-        }
+        return this.list.filter((a: Apartment) => {
+            const queryMatch =
+                query.length > 1
+                    ? a.makelaardij.toLowerCase().includes(query) ||
+                      a.address.toLowerCase().includes(query)
+                    : true
+            return queryMatch && (a.available || a.added)
+        })
     }
 
     fetch() {
