@@ -1,23 +1,46 @@
 import React from 'react'
 import { observer } from 'mobx-react'
-import clsx from 'clsx'
-import { makeStyles } from '@material-ui/core/styles'
-import { Drawer, Divider, List, ListItem, IconButton } from '@material-ui/core'
+import { createStyles, Theme, makeStyles } from '@material-ui/core/styles'
+import {
+    Divider,
+    List,
+    ListItem,
+    IconButton,
+    Modal,
+    Paper,
+    Slider,
+    Typography,
+} from '@material-ui/core'
 import { BiSliderAlt } from 'react-icons/bi'
 
 import { useStores } from '../stores'
 
-const useStyles = makeStyles({
-    list: {
-        width: 250,
-    },
-    fullList: {
-        width: 'auto',
-    },
-})
+const useStyles = makeStyles((theme: Theme) =>
+    createStyles({
+        list: {
+            width: 'auto',
+        },
+        modal: {
+            width: '100vw',
+            maxWidth: 300,
+            position: 'absolute',
+            transform: 'translate(-50%, -50%)',
+            top: '50%',
+            left: '50%',
+        },
+        label: {
+            flex: 0,
+        },
+        slider: {
+            flex: 1,
+            marginTop: theme.spacing(1),
+            marginLeft: theme.spacing(3),
+        },
+    })
+)
 
 export const Filters: React.FC = observer(() => {
-    const { ui } = useStores()
+    const { filters, ui } = useStores()
     const classes = useStyles()
 
     const toggleDrawer = (open: boolean) => (event: React.KeyboardEvent | React.MouseEvent) => {
@@ -32,28 +55,49 @@ export const Filters: React.FC = observer(() => {
         ui.setFiltersOpen(open)
     }
 
-    const list = (
-        <div
-            className={clsx(classes.list, classes.fullList)}
-            role="presentation"
-            onClick={toggleDrawer(false)}
-            onKeyDown={toggleDrawer(false)}
-        >
+    const setPriceRange = (event: any, price: number | number[]) => {
+        filters.setPriceRange(price as number[])
+    }
+
+    const valuetext = (value: number) => {
+        return `€${value}`
+    }
+
+    const marks = [
+        {
+            value: 200,
+            label: '200 K',
+        },
+        {
+            value: 325,
+            label: '325 K',
+        },
+        {
+            value: 425,
+            label: '425 K',
+        },
+    ]
+
+    const filterList = (
+        <div className={classes.list} role="presentation" onKeyDown={toggleDrawer(false)}>
             <List>
-                {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
-                    <ListItem button key={text}>
-                        {text}
-                    </ListItem>
-                ))}
+                <ListItem>
+                    <div className={classes.label}>Price</div>
+                    <div className={classes.slider}>
+                        <Slider
+                            value={filters.priceRange}
+                            onChange={setPriceRange}
+                            step={10}
+                            marks={marks}
+                            min={150}
+                            max={500}
+                            valueLabelDisplay="auto"
+                            getAriaValueText={valuetext}
+                        />
+                    </div>
+                </ListItem>
             </List>
             <Divider />
-            <List>
-                {['All mail', 'Trash', 'Spam'].map((text, index) => (
-                    <ListItem button key={text}>
-                        {text}
-                    </ListItem>
-                ))}
-            </List>
         </div>
     )
 
@@ -62,9 +106,9 @@ export const Filters: React.FC = observer(() => {
             <IconButton onClick={toggleDrawer(true)} color="inherit">
                 <BiSliderAlt />
             </IconButton>
-            <Drawer anchor="bottom" open={ui.filtersOpen} onClose={toggleDrawer(false)}>
-                {list}
-            </Drawer>
+            <Modal open={ui.filtersOpen} onClose={toggleDrawer(false)}>
+                <Paper classes={{ root: classes.modal }}>{filterList}</Paper>
+            </Modal>
         </React.Fragment>
     )
 })

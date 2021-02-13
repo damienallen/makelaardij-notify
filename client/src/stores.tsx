@@ -115,9 +115,14 @@ export class ApartmentStore {
 
 export class FilterStore {
     @observable query: string = ''
+    @observable priceRange: number[] = [0, 10000000]
 
     @action setQuery(value: string) {
         this.query = value
+    }
+
+    @action setPriceRange(value: number[]) {
+        this.priceRange = value
     }
 
     constructor(public root: RootStore) {
@@ -126,7 +131,7 @@ export class FilterStore {
 }
 
 export class UIStore {
-    @observable filtersOpen: boolean = false
+    @observable filtersOpen: boolean = true
 
     @observable dark: boolean = false
     @observable theme: Theme = lightTheme
