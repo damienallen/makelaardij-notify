@@ -2,6 +2,8 @@ import React from 'react'
 import { toJS } from 'mobx'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
+import utc from 'dayjs/plugin/utc'
+import timezone from 'dayjs/plugin/timezone'
 import { createStyles, Theme, makeStyles } from '@material-ui/core/styles'
 import { ListItem, Link } from '@material-ui/core'
 import { BiArea, BiHomeAlt, BiPurchaseTag, BiRightArrow } from 'react-icons/bi'
@@ -71,9 +73,15 @@ type Props = {
 export const Listing: React.FC<Props> = ({ listing }) => {
     const classes = useStyles()
     dayjs.extend(relativeTime)
+    dayjs.extend(utc)
+    dayjs.extend(timezone)
 
     console.debug(toJS(listing))
-    const listDate = listing.added ? Date.parse(listing.added) : Date.parse(listing.entry_added)
+    const displayDate = dayjs(
+        listing.added ? Date.parse(listing.added) : Date.parse(listing.entry_added)
+    )
+    displayDate.tz('Europe/Amsterdam')
+
     const energyLabel = listing.unit.energy.label ? (
         <span>
             <BiPurchaseTag />
@@ -114,7 +122,7 @@ export const Listing: React.FC<Props> = ({ listing }) => {
                     <div className={classes.areaPrice}>
                         €{Math.ceil(listing.asking_price / listing.unit.area)}/m&sup2;
                     </div>
-                    <div className={classes.added}>{dayjs(listDate).fromNow()}</div>
+                    <div className={classes.added}>{displayDate.fromNow()}</div>
                 </Link>
             </div>
         </ListItem>
