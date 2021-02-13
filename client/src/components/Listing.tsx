@@ -1,5 +1,4 @@
 import React from 'react'
-import { toJS } from 'mobx'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import utc from 'dayjs/plugin/utc'

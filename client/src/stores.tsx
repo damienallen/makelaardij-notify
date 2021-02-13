@@ -126,8 +126,14 @@ export class FilterStore {
 }
 
 export class UIStore {
+    @observable filtersOpen: boolean = false
+
     @observable dark: boolean = false
     @observable theme: Theme = lightTheme
+
+    @action setFiltersOpen(value: boolean) {
+        this.filtersOpen = value
+    }
 
     @action setDark(value: boolean) {
         this.dark = value
