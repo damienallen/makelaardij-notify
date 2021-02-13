@@ -5,6 +5,7 @@ import { Divider, List, IconButton, Modal, Paper } from '@material-ui/core'
 import { BiSliderAlt } from 'react-icons/bi'
 
 import { Area } from './filters/Area'
+import { Availability } from './filters/Availability'
 import { PriceRange } from './filters/PriceRange'
 import { YearRange } from './filters/YearRange'
 import { useStores } from '../stores'
@@ -65,8 +66,9 @@ export const FilterModal: React.FC = observer(() => {
                             <PriceRange />
                             <Area />
                             <YearRange />
+                            <Divider />
+                            <Availability />
                         </List>
-                        <Divider />
                     </div>
                 </Paper>
             </Modal>

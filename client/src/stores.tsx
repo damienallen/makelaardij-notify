@@ -115,9 +115,13 @@ export class ApartmentStore {
 
 export class FilterStore {
     @observable query: string = ''
+
     @observable priceRange: number[] = [0, 500]
     @observable area: number = 125
     @observable yearRange: number[] = [1900, 2020]
+
+    @observable available: boolean = true
+    @observable sold: boolean = false
 
     @action setQuery(value: string) {
         this.query = value
@@ -133,6 +137,11 @@ export class FilterStore {
 
     @action setYearRange(value: number[]) {
         this.yearRange = value
+    }
+
+    @action setAvailability(key: string, value: boolean) {
+        if (key === 'available') this.available = value
+        if (key === 'sold') this.sold = value
     }
 
     constructor(public root: RootStore) {
