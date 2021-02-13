@@ -129,23 +129,46 @@ export class FilterStore {
 
     @action setPriceRange(value: number[]) {
         this.priceRange = value
+        this.root.cookies.set('priceRange', value)
     }
 
     @action setArea(value: number) {
         this.area = value
+        this.root.cookies.set('area', value)
     }
 
     @action setYearRange(value: number[]) {
         this.yearRange = value
+        this.root.cookies.set('yearRange', value)
     }
 
     @action setAvailability(key: string, value: boolean) {
-        if (key === 'available') this.available = value
-        if (key === 'sold') this.sold = value
+        if (key === 'available') {
+            this.available = value
+            this.root.cookies.set('available', value)
+        } else if (key === 'sold') {
+            this.sold = value
+            this.root.cookies.set('sold', value)
+        }
     }
 
     constructor(public root: RootStore) {
         makeObservable(this)
+
+        const priceRange = root.cookies.get('priceRange')
+        if (priceRange) this.setPriceRange(priceRange)
+
+        const area = root.cookies.get('area')
+        if (area) this.setArea(area)
+
+        const yearRange = root.cookies.get('yearRange')
+        if (yearRange) this.setYearRange(yearRange)
+
+        const available = root.cookies.get('available')
+        if (available) this.setAvailability('available', available)
+
+        const sold = root.cookies.get('sold')
+        if (sold) this.setAvailability('sold', sold)
     }
 }
 
