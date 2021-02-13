@@ -124,6 +124,8 @@ export class FilterStore {
     @observable availability: string = 'available'
 
     matchesFilter(a: Apartment) {
+        // TODO: debounce inputs
+
         const query = this.query.toLowerCase()
         const queryMatch =
             query.length > 1
@@ -132,9 +134,9 @@ export class FilterStore {
                 : true
 
         const aboveMinPrice =
-            this.priceRange[0] <= minPrice ? true : a.asking_price > this.priceRange[0]
+            this.priceRange[0] <= minPrice ? true : a.asking_price / 1000 > this.priceRange[0]
         const belowMaxPrice =
-            this.priceRange[1] >= maxPrice ? true : a.asking_price < this.priceRange[1]
+            this.priceRange[1] >= maxPrice ? true : a.asking_price / 1000 < this.priceRange[1]
         const priceRangeMatch = aboveMinPrice && belowMaxPrice
 
         const aboveMinArea = this.areaRange[0] <= minArea ? true : a.unit.area > this.areaRange[0]
@@ -207,7 +209,7 @@ export class FilterStore {
 }
 
 export class UIStore {
-    @observable filtersOpen: boolean = true
+    @observable filtersOpen: boolean = false
 
     @observable dark: boolean = false
     @observable theme: Theme = lightTheme
