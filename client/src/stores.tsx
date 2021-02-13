@@ -114,7 +114,7 @@ export const maxArea = 125
 export const minYear = 1900
 export const maxYear = 2020
 
-export const debounceDelay = 100
+export const debounceDelay = 50
 
 export class FilterStore {
     @observable query: string = ''
