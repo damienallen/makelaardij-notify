@@ -2,7 +2,7 @@ import React from 'react'
 import { createStyles, Theme, makeStyles } from '@material-ui/core/styles'
 import { AppBar, Toolbar } from '@material-ui/core'
 
-import { Filters } from './Filters'
+import { FilterModal } from './FilterModal'
 import { Search } from './Search'
 import { ThemeToggle } from './ThemeToggle'
 
@@ -27,7 +27,7 @@ export const NavBar: React.FC = () => {
             <Toolbar>
                 <Search />
                 <div className={classes.grow} />
-                <Filters />
+                <FilterModal />
                 <ThemeToggle />
             </Toolbar>
         </AppBar>

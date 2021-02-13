@@ -115,7 +115,8 @@ export class ApartmentStore {
 
 export class FilterStore {
     @observable query: string = ''
-    @observable priceRange: number[] = [0, 10000000]
+    @observable priceRange: number[] = [0, 500]
+    @observable area: number = 125
 
     @action setQuery(value: string) {
         this.query = value
@@ -123,6 +124,10 @@ export class FilterStore {
 
     @action setPriceRange(value: number[]) {
         this.priceRange = value
+    }
+
+    @action setArea(value: number) {
+        this.area = value
     }
 
     constructor(public root: RootStore) {
