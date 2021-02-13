@@ -1,20 +1,21 @@
 import axios, { AxiosResponse, AxiosError } from 'axios'
 import React from 'react'
-// import Cookies from 'universal-cookie'
+import Cookies from 'universal-cookie'
 import { action, computed, makeObservable, observable } from 'mobx'
 import { Theme } from '@material-ui/core/styles'
 
 import { lightTheme, darkTheme } from './theme'
 
-// const cookies = new Cookies()
-
 export class RootStore {
+    public cookies: Cookies
     public apartments: ApartmentStore
     public filters: FilterStore
     public ui: UIStore
     public settings: SettingStore
 
     constructor() {
+        this.cookies = new Cookies()
+
         this.apartments = new ApartmentStore(this)
         this.filters = new FilterStore(this)
         this.ui = new UIStore(this)
@@ -130,8 +131,9 @@ export class UIStore {
 
     @action setDark(value: boolean) {
         this.dark = value
+        this.root.cookies.set('dark', value)
+
         this.theme = this.dark ? darkTheme : lightTheme
-        console.debug(`Theme set to '${this.theme.palette.type}'`)
     }
 
     @action toggleDark() {
@@ -140,6 +142,9 @@ export class UIStore {
 
     constructor(public root: RootStore) {
         makeObservable(this)
+
+        const isDark = root.cookies.get('dark')
+        if (isDark) this.setDark(true)
     }
 }
 

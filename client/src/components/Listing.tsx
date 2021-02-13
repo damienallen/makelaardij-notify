@@ -75,12 +75,11 @@ export const Listing: React.FC<Props> = ({ listing }) => {
     dayjs.extend(relativeTime)
     dayjs.extend(utc)
     dayjs.extend(timezone)
+    dayjs.tz.setDefault('Europe/Amsterdam')
 
-    console.debug(toJS(listing))
     const displayDate = dayjs(
         listing.added ? Date.parse(listing.added) : Date.parse(listing.entry_added)
     )
-    displayDate.tz('Europe/Amsterdam')
 
     const energyLabel = listing.unit.energy.label ? (
         <span>
