@@ -1,10 +1,10 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { observer } from 'mobx-react'
 import { createStyles, Theme, makeStyles } from '@material-ui/core/styles'
 import { ListItem, Slider } from '@material-ui/core'
 import { BiEuro } from 'react-icons/bi'
 
-import { useStores, minPrice, maxPrice } from '../../stores'
+import { useStores, debounceDelay, minPrice, maxPrice } from '../../stores'
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -22,9 +22,21 @@ const useStyles = makeStyles((theme: Theme) =>
 export const PriceRange: React.FC = observer(() => {
     const { filters } = useStores()
     const classes = useStyles()
+    const [inputValue, setInputValue] = useState(filters.priceRange)
 
-    const setPriceRange = (event: any, value: number | number[]) => {
-        filters.setPriceRange(value as number[])
+    const handleChange = (event: any, value: number | number[]) => {
+        // Update input immediately
+        setInputValue(value as number[])
+
+        // Debounce store update
+        clearTimeout(filters.debounceTimeout['price'])
+        filters.setDebounceTimeout(
+            'price',
+            setTimeout(function () {
+                filters.clearDebounceTimeout('price')
+                filters.setPriceRange(value as number[])
+            }, debounceDelay)
+        )
     }
 
     const valuetext = (value: number) => {
@@ -53,8 +65,8 @@ export const PriceRange: React.FC = observer(() => {
             </div>
             <div className={classes.slider}>
                 <Slider
-                    value={filters.priceRange}
-                    onChange={setPriceRange}
+                    value={inputValue}
+                    onChange={handleChange}
                     step={10}
                     marks={marks}
                     min={minPrice}

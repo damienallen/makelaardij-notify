@@ -1,10 +1,10 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { observer } from 'mobx-react'
 import { createStyles, Theme, makeStyles } from '@material-ui/core/styles'
 import { ListItem, Slider } from '@material-ui/core'
 import { BiArea } from 'react-icons/bi'
 
-import { useStores, minArea, maxArea } from '../../stores'
+import { useStores, debounceDelay, minArea, maxArea } from '../../stores'
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -22,9 +22,21 @@ const useStyles = makeStyles((theme: Theme) =>
 export const AreaRange: React.FC = observer(() => {
     const { filters } = useStores()
     const classes = useStyles()
+    const [inputValue, setInputValue] = useState(filters.areaRange)
 
-    const setArea = (event: any, value: number | number[]) => {
-        filters.setAreaRange(value as number[])
+    const handleChange = (event: any, value: number | number[]) => {
+        // Update input immediately
+        setInputValue(value as number[])
+
+        // Debounce store update
+        clearTimeout(filters.debounceTimeout['area'])
+        filters.setDebounceTimeout(
+            'area',
+            setTimeout(function () {
+                filters.clearDebounceTimeout('area')
+                filters.setAreaRange(value as number[])
+            }, debounceDelay)
+        )
     }
 
     const valuetext = (value: number) => {
@@ -49,8 +61,8 @@ export const AreaRange: React.FC = observer(() => {
             </div>
             <div className={classes.slider}>
                 <Slider
-                    value={filters.areaRange}
-                    onChange={setArea}
+                    value={inputValue}
+                    onChange={handleChange}
                     step={10}
                     marks={marks}
                     min={minArea}

@@ -114,14 +114,17 @@ export const maxArea = 125
 export const minYear = 1900
 export const maxYear = 2020
 
+export const debounceDelay = 100
+
 export class FilterStore {
     @observable query: string = ''
 
     @observable priceRange: number[] = [minPrice, maxPrice]
     @observable areaRange: number[] = [minArea, maxArea]
     @observable yearRange: number[] = [minYear, maxYear]
-
     @observable availability: string = 'available'
+
+    @observable debounceTimeout: any = {}
 
     matchesFilter(a: Apartment) {
         // TODO: debounce inputs
@@ -189,6 +192,14 @@ export class FilterStore {
     @action setAvailability(value: string) {
         this.availability = value
         this.root.cookies.set('availability', value)
+    }
+
+    @action setDebounceTimeout(key: string, value: any) {
+        this.debounceTimeout[key] = value
+    }
+
+    @action clearDebounceTimeout(key: string) {
+        this.debounceTimeout[key] = null
     }
 
     constructor(public root: RootStore) {
