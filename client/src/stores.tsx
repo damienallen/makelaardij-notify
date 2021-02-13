@@ -121,8 +121,7 @@ export class FilterStore {
     @observable areaRange: number[] = [minArea, maxArea]
     @observable yearRange: number[] = [minYear, maxYear]
 
-    @observable available: boolean = true
-    @observable sold: boolean = false
+    @observable availability: string = 'available'
 
     matchesFilter(a: Apartment) {
         const query = this.query.toLowerCase()
@@ -155,10 +154,14 @@ export class FilterStore {
             yearRangeMatch = aboveMinYear && belowMaxYear
         }
 
+        const availabilityMatch =
+            this.availability === 'all'
+                ? true
+                : (this.availability === 'available' && a.available) ||
+                  (this.availability === 'sold' && !a.available)
+
         return (
-            queryMatch && priceRangeMatch && areaRangeMatch && yearRangeMatch
-            // this.root.filters.available === Boolean(a.available) &&
-            // this.root.filters.sold === Boolean(a.available)
+            queryMatch && priceRangeMatch && areaRangeMatch && yearRangeMatch && availabilityMatch
         )
     }
 
@@ -181,14 +184,9 @@ export class FilterStore {
         this.root.cookies.set('yearRange', value)
     }
 
-    @action setAvailability(key: string, value: boolean) {
-        if (key === 'available') {
-            this.available = value
-            this.root.cookies.set('available', value)
-        } else if (key === 'sold') {
-            this.sold = value
-            this.root.cookies.set('sold', value)
-        }
+    @action setAvailability(value: string) {
+        this.availability = value
+        this.root.cookies.set('availability', value)
     }
 
     constructor(public root: RootStore) {
@@ -203,11 +201,8 @@ export class FilterStore {
         const yearRange = root.cookies.get('yearRange')
         if (yearRange) this.setYearRange(yearRange)
 
-        const available = root.cookies.get('available')
-        if (available) this.setAvailability('available', available)
-
-        const sold = root.cookies.get('sold')
-        if (sold) this.setAvailability('sold', sold)
+        const availability = root.cookies.get('availability')
+        if (availability) this.setAvailability(availability)
     }
 }
 

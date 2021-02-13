@@ -1,7 +1,7 @@
 import React from 'react'
 import { observer } from 'mobx-react'
 import { createStyles, Theme, makeStyles } from '@material-ui/core/styles'
-import { Checkbox, FormControlLabel, FormGroup, ListItem } from '@material-ui/core'
+import { Radio, FormControlLabel, RadioGroup, ListItem } from '@material-ui/core'
 
 import { useStores } from '../../stores'
 
@@ -30,31 +30,36 @@ export const Availability: React.FC = observer(() => {
     const classes = useStyles()
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        filters.setAvailability(event.target.name, event.target.checked)
+        filters.setAvailability((event.target as HTMLInputElement).value)
     }
 
     return (
         <ListItem>
-            <FormGroup row className={classes.group}>
+            <RadioGroup
+                value={filters.availability}
+                onChange={handleChange}
+                className={classes.group}
+                row
+            >
                 <FormControlLabel
-                    control={
-                        <Checkbox
-                            checked={filters.available}
-                            onChange={handleChange}
-                            name="available"
-                        />
-                    }
+                    control={<Radio />}
+                    className={classes.control}
+                    label="all"
+                    value="all"
+                />
+                <FormControlLabel
+                    control={<Radio />}
                     className={classes.control}
                     label="available"
+                    value="available"
                 />
                 <FormControlLabel
-                    control={
-                        <Checkbox checked={filters.sold} onChange={handleChange} name="sold" />
-                    }
+                    control={<Radio />}
                     className={classes.control}
                     label="sold"
+                    value="sold"
                 />
-            </FormGroup>
+            </RadioGroup>
         </ListItem>
     )
 })

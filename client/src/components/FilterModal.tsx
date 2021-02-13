@@ -1,8 +1,8 @@
 import React from 'react'
 import { observer } from 'mobx-react'
 import { createStyles, Theme, makeStyles } from '@material-ui/core/styles'
-import { Divider, List, IconButton, Modal, Paper } from '@material-ui/core'
-import { BiSliderAlt } from 'react-icons/bi'
+import { Card, CardHeader, Divider, List, IconButton, Modal } from '@material-ui/core'
+import { BiSliderAlt, BiX } from 'react-icons/bi'
 
 import { AreaRange } from './filters/AreaRange'
 import { Availability } from './filters/Availability'
@@ -12,6 +12,10 @@ import { useStores } from '../stores'
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
+        title: {
+            fontSize: '1.3em',
+            color: theme.palette.text.hint,
+        },
         list: {
             width: 'auto',
         },
@@ -56,12 +60,21 @@ export const FilterModal: React.FC = observer(() => {
                 <BiSliderAlt />
             </IconButton>
             <Modal open={ui.filtersOpen} onClose={toggleDrawer(false)}>
-                <Paper classes={{ root: classes.modal }}>
+                <Card classes={{ root: classes.modal }}>
                     <div
                         className={classes.list}
                         role="presentation"
                         onKeyDown={toggleDrawer(false)}
                     >
+                        <CardHeader
+                            action={
+                                <IconButton onClick={toggleDrawer(false)} aria-label="close">
+                                    <BiX />
+                                </IconButton>
+                            }
+                            title="Filters"
+                            classes={{ title: classes.title }}
+                        />
                         <List>
                             <PriceRange />
                             <AreaRange />
@@ -70,7 +83,7 @@ export const FilterModal: React.FC = observer(() => {
                             <Availability />
                         </List>
                     </div>
-                </Paper>
+                </Card>
             </Modal>
         </React.Fragment>
     )
