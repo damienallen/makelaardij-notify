@@ -2,7 +2,7 @@ import React from 'react'
 import { observer } from 'mobx-react'
 import { createStyles, Theme, makeStyles } from '@material-ui/core/styles'
 import { ListItem, Slider } from '@material-ui/core'
-import { BiArea } from 'react-icons/bi'
+import { BiHomeAlt } from 'react-icons/bi'
 
 import { useStores } from '../../stores'
 
@@ -19,12 +19,12 @@ const useStyles = makeStyles((theme: Theme) =>
     })
 )
 
-export const Area: React.FC = observer(() => {
+export const YearRange: React.FC = observer(() => {
     const { filters } = useStores()
     const classes = useStyles()
 
-    const setArea = (event: any, value: number | number[]) => {
-        filters.setArea(value as number)
+    const setYearRange = (event: any, value: number | number[]) => {
+        filters.setYearRange(value as number[])
     }
 
     const valuetext = (value: number) => {
@@ -33,28 +33,28 @@ export const Area: React.FC = observer(() => {
 
     const marks = [
         {
-            value: 75,
-            label: '75 m²',
+            value: 1930,
+            label: '1930',
         },
         {
-            value: 100,
-            label: '100 m²',
+            value: 1990,
+            label: '1990',
         },
     ]
 
     return (
         <ListItem>
             <div className={classes.label}>
-                <BiArea />
+                <BiHomeAlt />
             </div>
             <div className={classes.slider}>
                 <Slider
-                    value={filters.area}
-                    onChange={setArea}
+                    value={filters.yearRange}
+                    onChange={setYearRange}
                     step={10}
                     marks={marks}
-                    min={50}
-                    max={125}
+                    min={1900}
+                    max={2020}
                     valueLabelDisplay="auto"
                     getAriaValueText={valuetext}
                 />

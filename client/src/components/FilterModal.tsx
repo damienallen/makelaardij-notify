@@ -6,6 +6,7 @@ import { BiSliderAlt } from 'react-icons/bi'
 
 import { Area } from './filters/Area'
 import { PriceRange } from './filters/PriceRange'
+import { YearRange } from './filters/YearRange'
 import { useStores } from '../stores'
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -63,6 +64,7 @@ export const FilterModal: React.FC = observer(() => {
                         <List>
                             <PriceRange />
                             <Area />
+                            <YearRange />
                         </List>
                         <Divider />
                     </div>

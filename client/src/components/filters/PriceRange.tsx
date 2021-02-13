@@ -13,9 +13,8 @@ const useStyles = makeStyles((theme: Theme) =>
             flex: 0,
         },
         slider: {
+            margin: theme.spacing(0, 2.5, 0),
             flex: 1,
-            marginTop: theme.spacing(1),
-            marginLeft: theme.spacing(3),
         },
     })
 )

@@ -117,6 +117,7 @@ export class FilterStore {
     @observable query: string = ''
     @observable priceRange: number[] = [0, 500]
     @observable area: number = 125
+    @observable yearRange: number[] = [1900, 2020]
 
     @action setQuery(value: string) {
         this.query = value
@@ -128,6 +129,10 @@ export class FilterStore {
 
     @action setArea(value: number) {
         this.area = value
+    }
+
+    @action setYearRange(value: number[]) {
+        this.yearRange = value
     }
 
     constructor(public root: RootStore) {
