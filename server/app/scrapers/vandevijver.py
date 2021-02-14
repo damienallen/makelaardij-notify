@@ -30,39 +30,34 @@ async def main(update_existing: bool = False):
         f"[{datetime.now().isoformat(' ', 'seconds')}] {MAKELAARDIJ} | Scraped {len(apartment_urls)} listings"
     )
 
-    if False:
-        l = await scrape_item(
-            "https://vandevijvermakelaardij.nl/woning/groeninxstraat-9b/"
-        )
-    else:
-        for url in apartment_urls:
-            listing = await engine.find_one(Apartment, Apartment.url == f"{url}")
+    for url in apartment_urls:
+        listing = await engine.find_one(Apartment, Apartment.url == f"{url}")
 
-            # Skip existing if not outdated
-            if listing and not update_existing:
-                continue
+        # Skip existing if not outdated
+        if listing and not update_existing:
+            continue
 
-            # Otherwise scrape
-            try:
-                listing_data = await scrape_item(url)
-            except InvalidListing:
-                continue
+        # Otherwise scrape
+        try:
+            listing_data = await scrape_item(url)
+        except InvalidListing:
+            continue
 
-            apartment = Apartment.parse_obj(listing_data)
+        apartment = Apartment.parse_obj(listing_data)
 
-            if listing is None:
-                await engine.save(apartment)
-            else:
-                listing.asking_price = apartment.asking_price
-                listing.photos = apartment.photos
-                listing.available = apartment.available
-                listing.unit = apartment.unit
-                listing.building = apartment.building
-                listing.entry_updated = datetime.utcnow()
+        if listing is None:
+            await engine.save(apartment)
+        else:
+            listing.asking_price = apartment.asking_price
+            listing.photos = apartment.photos
+            listing.available = apartment.available
+            listing.unit = apartment.unit
+            listing.building = apartment.building
+            listing.entry_updated = datetime.utcnow()
 
-                await engine.save(listing)
+            await engine.save(listing)
 
-            sleep(get_interval(LISTING_DELAY, JITTER))
+        sleep(get_interval(LISTING_DELAY, JITTER))
 
 
 async def scrape_page() -> List[str]:

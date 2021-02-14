@@ -11,3 +11,6 @@ maarten:
 
 vijver:
 	python -m app.scrapers.vandevijver
+
+voorberg:
+	python -m app.scrapers.voorberg
