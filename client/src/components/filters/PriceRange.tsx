@@ -67,7 +67,7 @@ export const PriceRange: React.FC = observer(() => {
                 <Slider
                     value={inputValue}
                     onChange={handleChange}
-                    step={10}
+                    step={5}
                     marks={marks}
                     min={minPrice}
                     max={maxPrice}

@@ -63,7 +63,7 @@ export const AreaRange: React.FC = observer(() => {
                 <Slider
                     value={inputValue}
                     onChange={handleChange}
-                    step={10}
+                    step={5}
                     marks={marks}
                     min={minArea}
                     max={maxArea}
