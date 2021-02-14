@@ -44,16 +44,14 @@ async def main():
 
 
 async def scrape_page() -> List[str]:
-    url = f"{BASE_URL}/aanbod/{CITY}/ "
+    url = f"{BASE_URL}/aanbod/{CITY}/"
 
     # print(url)
     async with httpx.AsyncClient() as client:
         result = await client.get(url)
 
     # Check for good status
-    if result.status_code == 404:
-        return []
-    elif not result.status_code == 200:
+    if not result.status_code == 200:
         print(f"Error: {result}")
         return []
 

@@ -7,3 +7,6 @@ blijdorp:
 
 maarten:
 	python -m app.scrapers.maarten
+
+vijver:
+	python -m app.scrapers.vandevijver
