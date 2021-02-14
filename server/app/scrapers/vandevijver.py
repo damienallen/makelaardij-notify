@@ -1,4 +1,5 @@
 import asyncio
+import json
 import re
 from datetime import datetime
 from random import randint
@@ -21,7 +22,7 @@ JITTER = 2
 engine = AIOEngine(database="aanbod")
 
 
-async def main():
+async def main(update_existing: bool = False):
     apartment_urls = await scrape_page()
     sleep(PAGE_DELAY)
 
@@ -29,20 +30,39 @@ async def main():
         f"[{datetime.now().isoformat(' ', 'seconds')}] {MAKELAARDIJ} | Scraped {len(apartment_urls)} listings"
     )
 
-    for url in apartment_urls:
-        listing = await engine.find_one(Apartment, Apartment.url == f"{url}")
+    if False:
+        l = await scrape_item(
+            "https://vandevijvermakelaardij.nl/woning/groeninxstraat-9b/"
+        )
+    else:
+        for url in apartment_urls:
+            listing = await engine.find_one(Apartment, Apartment.url == f"{url}")
 
-        if listing is None:
+            # Skip existing if not outdated
+            if listing and not update_existing:
+                continue
+
+            # Otherwise scrape
             try:
                 listing_data = await scrape_item(url)
-                apartment = Apartment.parse_obj(listing_data)
-                await engine.save(apartment)
-                sleep(get_interval(LISTING_DELAY, JITTER))
             except InvalidListing:
-                pass
+                continue
 
-    # else:
-    #     print(f"Skipping '{listing.address}', already in DB")
+            apartment = Apartment.parse_obj(listing_data)
+
+            if listing is None:
+                await engine.save(apartment)
+            else:
+                listing.asking_price = apartment.asking_price
+                listing.photos = apartment.photos
+                listing.available = apartment.available
+                listing.unit = apartment.unit
+                listing.building = apartment.building
+                listing.entry_updated = datetime.utcnow()
+
+                await engine.save(listing)
+
+            sleep(get_interval(LISTING_DELAY, JITTER))
 
 
 async def scrape_page() -> List[str]:
@@ -130,13 +150,16 @@ def extract_features(soup):
         p_text = p.text.lower()
 
         if "bijzonderheden" in p_text:
-            segments = re.split("-\n", p_text)
+            segments = re.split("[-\n]", p_text)
             for s in segments:
 
-                if "bouwjaar" in s:
-                    meta_data["building"]["year_constructed"] = find_int(
-                        s.split(",")[0]
-                    )
+                if "bouwjaar" in s and not "ketel" in s:
+                    try:
+                        meta_data["building"]["year_constructed"] = find_int(
+                            s.split(",")[0]
+                        )
+                    except ValueError:
+                        pass
 
                 elif "woonoppervlakte" in s:
                     meta_data["unit"]["area"] = find_float(s.split("m")[0])
