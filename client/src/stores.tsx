@@ -176,22 +176,26 @@ export class FilterStore {
 
     @action setPriceRange(value: number[]) {
         this.priceRange = value
-        this.root.cookies.set('priceRange', value)
+        this.root.cookies.set('priceRange', value, { path: '/', sameSite: 'lax', maxAge: 31536000 })
     }
 
     @action setAreaRange(value: number[]) {
         this.areaRange = value
-        this.root.cookies.set('areaRange', value)
+        this.root.cookies.set('areaRange', value, { path: '/', sameSite: 'lax', maxAge: 31536000 })
     }
 
     @action setYearRange(value: number[]) {
         this.yearRange = value
-        this.root.cookies.set('yearRange', value)
+        this.root.cookies.set('yearRange', value, { path: '/', sameSite: 'lax', maxAge: 31536000 })
     }
 
     @action setAvailability(value: string) {
         this.availability = value
-        this.root.cookies.set('availability', value)
+        this.root.cookies.set('availability', value, {
+            path: '/',
+            sameSite: 'lax',
+            maxAge: 31536000,
+        })
     }
 
     @action setDebounceTimeout(key: string, value: any) {
@@ -231,7 +235,7 @@ export class UIStore {
 
     @action setDark(value: boolean) {
         this.dark = value
-        this.root.cookies.set('dark', value)
+        this.root.cookies.set('dark', value, { path: '/', sameSite: 'lax', maxAge: 31536000 })
 
         this.theme = this.dark ? darkTheme : lightTheme
     }

@@ -16,8 +16,10 @@ const useStyles = makeStyles((theme: Theme) =>
             '& a': {
                 textDecoration: 'none !important',
             },
-            '&:hover': {
-                backgroundColor: theme.palette.secondary.main,
+            [theme.breakpoints.up('md')]: {
+                '&:hover': {
+                    backgroundColor: theme.palette.secondary.main,
+                },
             },
             '& svg': {
                 paddingTop: 3,
