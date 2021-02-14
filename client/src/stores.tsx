@@ -235,7 +235,9 @@ export class UIStore {
 
     @action setDark(value: boolean) {
         this.dark = value
-        this.root.cookies.set('dark', value, { path: '/', sameSite: 'lax', maxAge: 31536000 })
+
+        const theme = value ? 'dark' : 'light'
+        this.root.cookies.set('theme', theme, { path: '/', sameSite: 'lax', maxAge: 31536000 })
 
         this.theme = this.dark ? darkTheme : lightTheme
     }
@@ -247,8 +249,8 @@ export class UIStore {
     constructor(public root: RootStore) {
         makeObservable(this)
 
-        const isDark = root.cookies.get('dark')
-        if (isDark) this.setDark(true)
+        const theme = root.cookies.get('theme')
+        if (theme) this.setDark(theme === 'dark')
     }
 }
 
