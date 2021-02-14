@@ -2,6 +2,10 @@ import re
 from random import randint
 
 
+class InvalidListing(Exception):
+    pass
+
+
 def find_int(value: str) -> int:
     return int(re.sub(r"[^0-9]", "", value)) if value is not None else None
 

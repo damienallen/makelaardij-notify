@@ -6,7 +6,7 @@ from time import sleep
 from typing import List, Union
 
 import httpx
-from app.common import find_float, find_int, get_interval
+from app.common import InvalidListing, find_float, find_int, get_interval
 from app.models import Apartment
 from bs4 import BeautifulSoup
 from odmantic import AIOEngine
@@ -29,19 +29,17 @@ async def main():
         f"[{datetime.now().isoformat(' ', 'seconds')}] {MAKELAARDIJ} | Scraped {len(apartment_urls)} listings"
     )
 
-    listing_data = await scrape_item(
-        "https://vandevijvermakelaardij.nl/woning/zonnebloemstraat-80a/"
-    )
-    # listing_data = await scrape_item(apartment_urls[0])
-    print(listing_data)
-    # for url in apartment_urls:
-    #     listing = await engine.find_one(Apartment, Apartment.url == f"{url}")
+    for url in apartment_urls:
+        listing = await engine.find_one(Apartment, Apartment.url == f"{url}")
 
-    #     if listing is None:
-    #         listing_data = await scrape_item(url)
-    #         apartment = Apartment.parse_obj(listing_data)
-    #         await engine.save(apartment)
-    #         sleep(get_interval(LISTING_DELAY, JITTER))
+        if listing is None:
+            try:
+                listing_data = await scrape_item(url)
+                apartment = Apartment.parse_obj(listing_data)
+                await engine.save(apartment)
+                sleep(get_interval(LISTING_DELAY, JITTER))
+            except InvalidListing:
+                pass
 
     # else:
     #     print(f"Skipping '{listing.address}', already in DB")
@@ -50,7 +48,6 @@ async def main():
 async def scrape_page() -> List[str]:
     url = f"{BASE_URL}/woningen/te-koop/"
 
-    print(url)
     async with httpx.AsyncClient() as client:
         result = await client.get(url)
 
@@ -115,6 +112,9 @@ def extract_features(soup):
     meta_data["address"] = features.find("h1").text
 
     meta = features.find_all("h5")
+    if not len(meta) > 2:
+        raise InvalidListing("Parking spot")
+
     meta_data["asking_price"] = find_int(meta[1].text)
     meta_data["unit"]["area"] = find_int(meta[2].find(text=True, recursive=False))
     meta_data["unit"]["num_rooms"] = find_int(meta[3].text.split("Slaapkamers")[0])
@@ -130,7 +130,7 @@ def extract_features(soup):
         p_text = p.text.lower()
 
         if "bijzonderheden" in p_text:
-            segments = p_text.split("\n")
+            segments = re.split("-\n", p_text)
             for s in segments:
 
                 if "bouwjaar" in s:
