@@ -68,6 +68,7 @@ export const AreaRange: React.FC = observer(() => {
                     min={minArea}
                     max={maxArea}
                     valueLabelDisplay="auto"
+                    color="secondary"
                     getAriaValueText={valuetext}
                 />
             </div>

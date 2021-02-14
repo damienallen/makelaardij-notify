@@ -68,6 +68,7 @@ export const YearRange: React.FC = observer(() => {
                     min={minYear}
                     max={maxYear}
                     valueLabelDisplay="auto"
+                    color="secondary"
                     getAriaValueText={valuetext}
                 />
             </div>

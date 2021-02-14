@@ -14,6 +14,9 @@ const useStyles = makeStyles((theme: Theme) =>
     createStyles({
         title: {
             fontSize: '1.3em',
+            color: theme.palette.text.primary,
+        },
+        subheader: {
             color: theme.palette.text.hint,
         },
         list: {
@@ -40,7 +43,7 @@ const useStyles = makeStyles((theme: Theme) =>
 )
 
 export const FilterModal: React.FC = observer(() => {
-    const { ui } = useStores()
+    const { apartments, ui } = useStores()
     const classes = useStyles()
 
     const toggleDrawer = (open: boolean) => (event: React.KeyboardEvent | React.MouseEvent) => {
@@ -73,7 +76,8 @@ export const FilterModal: React.FC = observer(() => {
                                 </IconButton>
                             }
                             title="Filters"
-                            classes={{ title: classes.title }}
+                            subheader={`${apartments.filteredList.length} of ${apartments.list.length}`}
+                            classes={{ title: classes.title, subheader: classes.subheader }}
                         />
                         <List>
                             <PriceRange />

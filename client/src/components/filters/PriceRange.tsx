@@ -72,6 +72,7 @@ export const PriceRange: React.FC = observer(() => {
                     min={minPrice}
                     max={maxPrice}
                     valueLabelDisplay="auto"
+                    color="secondary"
                     getAriaValueText={valuetext}
                 />
             </div>

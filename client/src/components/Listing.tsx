@@ -5,7 +5,7 @@ import utc from 'dayjs/plugin/utc'
 import timezone from 'dayjs/plugin/timezone'
 import { createStyles, Theme, makeStyles } from '@material-ui/core/styles'
 import { ListItem, Link } from '@material-ui/core'
-import { BiArea, BiHomeAlt, BiPurchaseTag, BiRightArrow } from 'react-icons/bi'
+import { BiArea, BiDetail, BiHomeAlt, BiPurchaseTag, BiRightArrow } from 'react-icons/bi'
 
 import { Apartment } from '../stores'
 
@@ -43,11 +43,11 @@ const useStyles = makeStyles((theme: Theme) =>
             textTransform: 'capitalize',
         },
         price: {
-            color: theme.palette.warning.main,
+            color: theme.palette.text.primary,
             fontSize: '1.5em',
         },
         areaPrice: {
-            color: theme.palette.primary.main,
+            color: theme.palette.secondary.dark,
             fontSize: '0.9em',
         },
         added: {
@@ -89,6 +89,14 @@ export const Listing: React.FC<Props> = ({ listing }) => {
         </span>
     ) : null
 
+    const erfpacht =
+        listing.unit.own_land === false ? (
+            <span>
+                <BiDetail />
+                Erfpacht
+            </span>
+        ) : null
+
     return (
         <ListItem alignItems="flex-start" classes={{ root: classes.root }}>
             <div className={classes.left}>
@@ -113,6 +121,7 @@ export const Listing: React.FC<Props> = ({ listing }) => {
                             {listing.unit.area} m&sup2;
                         </span>
                         {energyLabel}
+                        {erfpacht}
                     </div>
                 </Link>
             </div>

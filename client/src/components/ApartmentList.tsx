@@ -10,6 +10,8 @@ const useStyles = makeStyles((theme: Theme) =>
     createStyles({
         list: {
             padding: 0,
+            maxWidth: 580,
+            margin: '0 auto',
         },
         subheader: {
             backgroundColor: theme.palette.primary.main,
