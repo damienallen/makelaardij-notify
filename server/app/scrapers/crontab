@@ -1,3 +1,4 @@
 */15 * * * * cd /home/damien/mothership/makelaardij-notify/server && /home/damien/.cache/pypoetry/virtualenvs/makenot-vTuAG9By-py3.8/bin/python -m app.scrapers.blijdorp >> /home/damien/scrapers.log 2>&1
 */15 * * * * cd /home/damien/mothership/makelaardij-notify/server && /home/damien/.cache/pypoetry/virtualenvs/makenot-vTuAG9By-py3.8/bin/python -m app.scrapers.maarten >> /home/damien/scrapers.log 2>&1
 */15 * * * * cd /home/damien/mothership/makelaardij-notify/server && /home/damien/.cache/pypoetry/virtualenvs/makenot-vTuAG9By-py3.8/bin/python -m app.scrapers.vandevijver >> /home/damien/scrapers.log 2>&1
+*/15 * * * * cd /home/damien/mothership/makelaardij-notify/server && /home/damien/.cache/pypoetry/virtualenvs/makenot-vTuAG9By-py3.8/bin/python -m app.scrapers.voorberg >> /home/damien/scrapers.log 2>&1

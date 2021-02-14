@@ -18,37 +18,35 @@ MAKELAARDIJ = "voorberg"
 
 PAGE_DELAY = 2
 LISTING_DELAY = 2
-JITTER = 2
+JITTER = 1
 
 engine = AIOEngine(database="aanbod")
 
 
 async def main(update_existing: bool = False):
-    # apartment_urls = []
-    # page_limit = 1
-    # page_index = 1
+    apartment_urls = []
+    page_limit = 20
+    page_index = 1
 
-    # while page_index <= page_limit:
-    #     index_urls = await scrape_page(page_index)
-    #     if index_urls:
-    #         apartment_urls += index_urls
-    #         sleep(get_interval(PAGE_DELAY, JITTER))
-    #     else:
-    #         break
-    #     page_index += 1
+    while page_index <= page_limit:
+        index_urls = await scrape_page(page_index)
+        if index_urls:
+            apartment_urls += index_urls
+            sleep(get_interval(PAGE_DELAY, JITTER))
+        else:
+            break
+        page_index += 1
 
-    # sleep(PAGE_DELAY)
+    print(
+        f"[{datetime.now().isoformat(' ', 'seconds')}] {MAKELAARDIJ} | Scraped {len(apartment_urls)} listings"
+    )
 
-    # print(
-    #     f"[{datetime.now().isoformat(' ', 'seconds')}] {MAKELAARDIJ} | Scraped {len(apartment_urls)} listings"
-    # )
-
-    if True:
+    if False:
         l = await scrape_item(
             "https://www.voorberg.nl/woningaanbod/nolensstraat-18-a1-rotterdam/"
         )
         print(l)
-    elif False:
+    else:
         for url in apartment_urls:
             listing = await engine.find_one(Apartment, Apartment.url == f"{url}")
 
@@ -81,7 +79,6 @@ async def main(update_existing: bool = False):
 
 async def scrape_page(page_num: int) -> List[str]:
     url = f"{BASE_URL}/page/{page_num}/{QUERY}"
-    print(url)
 
     async with httpx.AsyncClient() as client:
         result = await client.get(url)
@@ -128,6 +125,9 @@ async def scrape_item(item_url: str):
     item_data = extract_features(soup)
     item_data["url"] = item_url
 
+    if not item_data["unit"].get("area"):
+        raise InvalidListing("Unable to find area")
+
     return item_data
 
 
@@ -139,7 +139,6 @@ def extract_features(soup):
         "makelaardij": MAKELAARDIJ,
         "building": {},
         "unit": {"energy": {}, "tags": []},
-        # "available": True,
         "photos": [],
     }
     main_content = soup.find("div", {"class": "woning"})
@@ -148,52 +147,75 @@ def extract_features(soup):
     # Basics
     basic_info = summary.find("div", {"class": "col"})
     meta_data["address"] = basic_info.find("h1").text.split(" | ")[0]
+    meta_data["asking_price"] = find_int(basic_info.find("p", {"class": "price"}).text)
+    meta_data["available"] = (
+        basic_info.find("div", {"class": "new-house"}).text == "Beschikbaar"
+    )
 
-    # meta_data["asking_price"] = find_int(meta[1].text)
-    # meta_data["unit"]["area"] = find_int(meta[2].find(text=True, recursive=False))
-    # meta_data["unit"]["num_rooms"] = find_int(meta[3].text.split("Slaapkamers")[0])
+    # Description
+    description = summary.find("div", {"class": "omschrijving"}).text.lower()
 
-    # # Photos
-    # photos = soup.find_all("a", {"data-fancybox": "woning-gallery"})
-    # for photo_url in photos:
-    #     meta_data["photos"].append(photo_url["href"])
+    if "balkon" in description:
+        meta_data["unit"]["tags"].append("balcony")
 
-    # # Description
-    # description = soup.find("div", {"class": "woning-content-inner"}).find_all("p")
-    # for p in description:
-    #     p_text = p.text.lower()
+    if "dakterras" in description:
+        meta_data["unit"]["tags"].append("roof_terrace")
 
-    #     if "bijzonderheden" in p_text:
-    #         segments = re.split("[-\n]", p_text)
-    #         for s in segments:
+    if "eigen grond" in description:
+        meta_data["unit"]["own_land"] = True
 
-    #             if "bouwjaar" in s and not "ketel" in s:
-    #                 try:
-    #                     meta_data["building"]["year_constructed"] = find_int(
-    #                         s.split(",")[0]
-    #                     )
-    #                 except ValueError:
-    #                     pass
+    elif "erfpacht" in description:
+        meta_data["unit"]["own_land"] = False
 
-    #             elif "woonoppervlakte" in s:
-    #                 meta_data["unit"]["area"] = find_float(s.split("m")[0])
+    # Features
+    feature_items = (
+        main_content.find("div", {"class": "characteristics"})
+        .find("div", {"class": "container"})
+        .find("div", {"class": "row"})
+        .find_all("li")
+    )
 
-    #             elif "voortuin" in s or "achtertuin" in s or " tuin" in s:
-    #                 meta_data["unit"]["tags"].append("garden")
+    for feature in feature_items:
+        label = feature.find("label").text
+        value = feature.find("span").text
 
-    #             elif "eigen grond" in s:
-    #                 meta_data["unit"]["own_land"] = True
-    #             elif "erfpacht" in s:
-    #                 meta_data["unit"]["own_land"] = False
+        if label == "Constructie jaar":
+            meta_data["building"]["year_constructed"] = find_int(value)
 
-    #             elif "energielabel" in s:
-    #                 label = s.split("energielabel")[1]
-    #                 label = label.replace(":", "").replace(" ", "").upper()
-    #                 meta_data["unit"]["energy"]["label"] = label
+        elif label == "Geplaatst op":
+            meta_data["added"] = find_date(value)
 
-    #         break
+        elif label == "Laatste gewijzigd op":
+            meta_data["updated"] = find_date(value)
+
+        elif label == "Woonruimte":
+            meta_data["unit"]["area"] = find_float(value.split("m")[0])
+
+        elif label == "Dak":
+            meta_data["building"]["roof_type"] = value
+
+        elif label == "Verwarming":
+            meta_data["unit"]["energy"]["heating"] = value
+
+        elif label == "Warm water":
+            meta_data["unit"]["energy"]["water"] = value
+
+        elif label == "Aantal kamers":
+            meta_data["unit"]["num_rooms"] = find_int(value)
+
+        elif label == "Tuin":
+            if "achtertuin" in value or "voortuin" in value:
+                meta_data["unit"]["tags"].append("garden")
 
     return meta_data
+
+
+def find_date(date_str: Union[str, None]) -> Union[datetime, None]:
+    if not date_str:
+        return None
+
+    date = date_str.split("-")
+    return datetime(year=int(date[2]), month=int(date[1]), day=int(date[0]))
 
 
 if __name__ == "__main__":

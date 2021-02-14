@@ -62,6 +62,7 @@ const useStyles = makeStyles((theme: Theme) =>
         },
         available: {
             color: theme.palette.success.main,
+            marginLeft: theme.spacing(1),
         },
     })
 )
