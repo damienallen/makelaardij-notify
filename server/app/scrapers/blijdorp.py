@@ -53,7 +53,7 @@ async def main():
 
 
 async def scrape_page(index: int) -> List[str]:
-    url = f"{BASE_URL}/woningaanbod/koop/{CITY}?skip={index*10}&minlivablearea=70"
+    url = f"{BASE_URL}/woningaanbod/koop/{CITY}?skip={index*10}"
     async with httpx.AsyncClient() as client:
         result = await client.get(url)
 

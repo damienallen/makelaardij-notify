@@ -62,7 +62,6 @@ const useStyles = makeStyles((theme: Theme) =>
         },
         available: {
             color: theme.palette.success.main,
-            marginLeft: theme.spacing(1),
         },
     })
 )
@@ -80,6 +79,20 @@ export const Listing: React.FC<Props> = ({ listing }) => {
 
     const displayDate = dayjs(
         listing.added ? Date.parse(listing.added) : Date.parse(listing.entry_added)
+    )
+
+    const constructionYear = listing.building.year_constructed ? (
+        <span>
+            <BiHomeAlt />
+            {listing.building.year_constructed}
+        </span>
+    ) : null
+
+    const floorArea = (
+        <span>
+            <BiArea />
+            {listing.unit.area} m&sup2;
+        </span>
     )
 
     const energyLabel = listing.unit.energy.label ? (
@@ -112,14 +125,8 @@ export const Listing: React.FC<Props> = ({ listing }) => {
                         ) : null}
                     </div>
                     <div className={classes.meta}>
-                        <span>
-                            <BiHomeAlt />
-                            {listing.building.year_constructed}
-                        </span>
-                        <span>
-                            <BiArea />
-                            {listing.unit.area} m&sup2;
-                        </span>
+                        {constructionYear}
+                        {floorArea}
                         {energyLabel}
                         {erfpacht}
                     </div>
