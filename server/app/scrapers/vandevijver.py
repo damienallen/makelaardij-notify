@@ -106,6 +106,7 @@ def extract_features(soup):
         "building": {},
         "unit": {"energy": {}, "tags": []},
         "available": True,
+        "photos": [],
     }
 
     features = soup.find("div", {"class": "woning-title"})
@@ -119,7 +120,9 @@ def extract_features(soup):
     meta_data["unit"]["num_rooms"] = find_int(meta[3].text.split("Slaapkamers")[0])
 
     # Photos
-    # photos = soup.find_all
+    photos = soup.find_all("a", {"data-fancybox": "woning-gallery"})
+    for photo_url in photos:
+        meta_data["photos"].append(photo_url["href"])
 
     # Description
     description = soup.find("div", {"class": "woning-content-inner"}).find_all("p")
