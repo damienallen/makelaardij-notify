@@ -1,17 +1,8 @@
 import asyncio
-import json
-import re
 from datetime import datetime
-from random import randint
-from time import sleep
 from typing import List, Union
-from pydantic.error_wrappers import ValidationError as PydanticError
-
-import httpx
-from app.common import MissingListing, SkipListing
-from app.models import Apartment
+from app.common import SkipListing
 from app.scrapers.base import BaseScraper
-from bs4 import BeautifulSoup
 from odmantic import AIOEngine
 
 

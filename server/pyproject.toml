@@ -11,7 +11,6 @@ beautifulsoup4 = "^4.9.3"
 fastapi = "^0.63.0"
 uvicorn = "^0.13.3"
 odmantic = "^0.3.2"
-arq = "^0.19.1"
 httpx = "^0.16.1"
 
 [tool.poetry.dev-dependencies]
