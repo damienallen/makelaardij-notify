@@ -1,5 +1,5 @@
 import React from 'react'
-import dayjs from 'dayjs'
+import dayjs, { Dayjs } from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import utc from 'dayjs/plugin/utc'
 import timezone from 'dayjs/plugin/timezone'
@@ -78,9 +78,15 @@ export const Listing: React.FC<Props> = ({ listing }) => {
     dayjs.extend(timezone)
     dayjs.tz.setDefault('Europe/Amsterdam')
 
-    const displayDate = dayjs(
-        listing.added ? Date.parse(listing.added) : Date.parse(listing.entry_added)
-    )
+    let displayDate: Dayjs
+    if (listing.added) {
+        const addedDate = dayjs(Date.parse(listing.added))
+        displayDate = dayjs().isSame(addedDate, 'day')
+            ? dayjs(Date.parse(listing.entry_added))
+            : addedDate
+    } else {
+        displayDate = dayjs(Date.parse(listing.entry_added))
+    }
 
     const constructionYear = listing.building.year_constructed ? (
         <span>
