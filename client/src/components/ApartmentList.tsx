@@ -23,7 +23,9 @@ export const ApartmentList: React.FC = observer(() => {
     const { apartments } = useStores()
     const classes = useStyles()
 
-    const now = Date.now()
+    const now = new Date()
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59)
+    console.log(today, today.getTime())
     const threholds = [
         { label: 'Today', value: 0 },
         { label: 'Yesterday', value: 1 },
@@ -41,7 +43,7 @@ export const ApartmentList: React.FC = observer(() => {
     for (let i = 0; i < numListings; i++) {
         const a = apartments.filteredList[i]
         const listingDate = apartments.getSortDate(a)
-        const timeDiff = (now - listingDate) / 1000 / 60 / 60 / 24
+        const timeDiff = (today.getTime() - listingDate) / 1000 / 60 / 60 / 24
 
         if (threholds[0] && timeDiff > threholds[0].value) {
             const nextThreshold = threholds.shift()
