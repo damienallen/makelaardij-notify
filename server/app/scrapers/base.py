@@ -26,15 +26,17 @@ class BaseScraper:
     WAIT: int = 2
     JITTER: int = 1
 
-    async def main(self, update_existing: bool = False):
+    async def start(self, update_existing: bool = False, debug_mode: bool = False):
         apartment_urls = await self.get_apartment_urls()
         self.print_header(f"| Scraped {len(apartment_urls)} listings")
+        if debug_mode:
+            apartment_urls = [apartment_urls[0]]
 
         for url in apartment_urls:
             listing = await engine.find_one(Apartment, Apartment.url == f"{url}")
 
             # Skip existing if not outdated
-            if listing and not update_existing:
+            if listing and not update_existing and not debug_mode:
                 continue
 
             # Otherwise scrape
@@ -51,9 +53,14 @@ class BaseScraper:
                 continue
 
             # Create or update DB entry
-            if listing is None:
+            if debug_mode:
                 self.print_header(f"+ {apartment.address}")
-                # await engine.save(apartment)
+                print(listing_data)
+
+            elif listing is None:
+                self.print_header(f"+ {apartment.address}")
+                await engine.save(apartment)
+
             else:
                 listing.asking_price = apartment.asking_price
                 listing.photos = apartment.photos
@@ -62,7 +69,7 @@ class BaseScraper:
                 listing.building = apartment.building
                 listing.entry_updated = datetime.utcnow()
 
-                # await engine.save(listing)
+                await engine.save(listing)
 
             self.sleep_interval()
 
@@ -275,10 +282,10 @@ class BaseScraper:
 
 
 if __name__ == "__main__":
-    s = BaseScraper()
-    s.BASE_URL = "https://www.voorberg.nl"
-    s.QUERY = "?s=Rotterdam&min-koop=0&max-koop=2000000&min-huur=0&max-huur=5000&rooms=nvt&opp=nvt&post_type=properties&koop_huur=koop"
-    s.MAKELAARDIJ = "voorberg"
+    scraper = BaseScraper()
+    scraper.BASE_URL = "https://www.voorberg.nl"
+    scraper.QUERY = "?s=Rotterdam&min-koop=0&max-koop=2000000&min-huur=0&max-huur=5000&rooms=nvt&opp=nvt&post_type=properties&koop_huur=koop"
+    scraper.MAKELAARDIJ = "voorberg"
 
     loop = asyncio.get_event_loop()
-    loop.run_until_complete(s.main())
+    loop.run_until_complete(scraper.start(debug_mode=True))
