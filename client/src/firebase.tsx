@@ -12,7 +12,7 @@ const firebaseConfig = {
 }
 firebase.initializeApp(firebaseConfig)
 
-export const messaging = firebase.messaging()
+const messaging = firebase.messaging()
 const messagingKey =
     'BAE1htPUauAQLnOX9eXvBV0C-56pT9aWopiIvhJTCjSsLJf_IBU5iQju458cpOSCFfT_8N_PAf6zn4nHmt8cSAU'
 
@@ -36,3 +36,10 @@ export const getToken = (setTokenFound: any) => {
             // catch error while creating client token
         })
 }
+
+export const onMessageListener = () =>
+    new Promise((resolve) => {
+        messaging.onMessage((payload) => {
+            resolve(payload)
+        })
+    })

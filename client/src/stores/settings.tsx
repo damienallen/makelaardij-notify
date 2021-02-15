@@ -23,10 +23,15 @@ export class SettingStore {
 
     @action setPushAllowed(value: boolean) {
         this.pushAllowed = value
+        if (value) this.pushEnabled = true
     }
 
     @action setPushEnabled(value: boolean) {
         this.pushEnabled = value
+    }
+
+    @action togglePushEnabled() {
+        this.pushEnabled = !this.pushEnabled
     }
 
     @computed get authenticated() {
