@@ -7,7 +7,13 @@ from time import sleep
 from typing import List, Union
 
 import httpx
-from app.common import InvalidListing, find_float, find_int, get_interval
+from app.common import (
+    InvalidListing,
+    find_float,
+    find_int,
+    get_interval,
+    print_new_listing,
+)
 from app.models import Apartment
 from bs4 import BeautifulSoup
 from odmantic import AIOEngine
@@ -41,40 +47,35 @@ async def main(update_existing: bool = False):
         f"[{datetime.now().isoformat(' ', 'seconds')}] {MAKELAARDIJ}    | Scraped {len(apartment_urls)} listings"
     )
 
-    if False:
-        l = await scrape_item(
-            "https://www.voorberg.nl/woningaanbod/nolensstraat-18-a1-rotterdam/"
-        )
-        print(l)
-    else:
-        for url in apartment_urls:
-            listing = await engine.find_one(Apartment, Apartment.url == f"{url}")
+    for url in apartment_urls:
+        listing = await engine.find_one(Apartment, Apartment.url == f"{url}")
 
-            # Skip existing if not outdated
-            if listing and not update_existing:
-                continue
+        # Skip existing if not outdated
+        if listing and not update_existing:
+            continue
 
-            # Otherwise scrape
-            try:
-                listing_data = await scrape_item(url)
-            except InvalidListing:
-                continue
+        # Otherwise scrape
+        try:
+            listing_data = await scrape_item(url)
+        except InvalidListing:
+            continue
 
-            apartment = Apartment.parse_obj(listing_data)
+        apartment = Apartment.parse_obj(listing_data)
 
-            if listing is None:
-                await engine.save(apartment)
-            else:
-                listing.asking_price = apartment.asking_price
-                listing.photos = apartment.photos
-                listing.available = apartment.available
-                listing.unit = apartment.unit
-                listing.building = apartment.building
-                listing.entry_updated = datetime.utcnow()
+        if listing is None:
+            print_new_listing(MAKELAARDIJ, apartment.address)
+            await engine.save(apartment)
+        else:
+            listing.asking_price = apartment.asking_price
+            listing.photos = apartment.photos
+            listing.available = apartment.available
+            listing.unit = apartment.unit
+            listing.building = apartment.building
+            listing.entry_updated = datetime.utcnow()
 
-                await engine.save(listing)
+            await engine.save(listing)
 
-            sleep(get_interval(LISTING_DELAY, JITTER))
+        sleep(get_interval(LISTING_DELAY, JITTER))
 
 
 async def scrape_page(page_num: int) -> List[str]:
@@ -104,15 +105,8 @@ async def scrape_page(page_num: int) -> List[str]:
 
 
 async def scrape_item(item_url: str):
-    addr = item_url.split("/")[-2].replace("-", " ").replace("rotterdam", "")
-
-    print(
-        f"[{datetime.now().isoformat(' ', 'seconds')}] {MAKELAARDIJ}    + {addr} ",
-        end="",
-    )
     async with httpx.AsyncClient() as client:
         result = await client.get(item_url)
-    print(f"[{result.status_code}]")
 
     # Check for good status
     if result.status_code == 404:

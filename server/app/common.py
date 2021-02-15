@@ -25,6 +25,13 @@ def get_interval(base_value: int, jitter: int) -> float:
     return base_value + randint(-jitter * 10, jitter * 10) / 10
 
 
+def print_new_listing(m: str, a: str):
+    m_padded = "{:<12}".format(m)
+    print(
+        f"[{datetime.now().isoformat(' ', 'seconds')}] {m}+ {a}",
+    )
+
+
 months_nl = {
     "januari": 1,
     "februari": 2,

@@ -5,7 +5,7 @@ from time import sleep
 from typing import List, Union
 
 import httpx
-from app.common import find_float, find_int, get_interval, months_nl
+from app.common import find_float, find_int, get_interval, months_nl, print_new_listing
 from app.models import Apartment
 from bs4 import BeautifulSoup
 from odmantic import AIOEngine
@@ -45,11 +45,10 @@ async def main():
         if listing is None:
             listing_data = await scrape_item(url)
             apartment = Apartment.parse_obj(listing_data)
+
+            print_new_listing(MAKELAARDIJ, apartment.address)
             await engine.save(apartment)
             sleep(get_interval(LISTING_DELAY, JITTER))
-
-        # else:
-        #     print(f"Skipping '{listing.address}', already in DB")
 
 
 async def scrape_page(index: int) -> List[str]:
@@ -79,15 +78,9 @@ async def scrape_page(index: int) -> List[str]:
 
 async def scrape_item(item_url: str):
     url = f"{BASE_URL}{item_url}"
-    url_parts = item_url.split("/")
 
-    print(
-        f"[{datetime.now().isoformat(' ', 'seconds')}] {MAKELAARDIJ}    + {url_parts[-2]} {url_parts[-1]} ",
-        end="",
-    )
     async with httpx.AsyncClient() as client:
         result = await client.get(url)
-    print(f"[{result.status_code}]")
 
     # Check for good status
     if result.status_code == 404:
