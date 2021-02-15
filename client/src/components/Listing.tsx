@@ -47,7 +47,7 @@ const useStyles = makeStyles((theme: Theme) =>
             fontSize: '1.5em',
         },
         areaPrice: {
-            color: theme.palette.secondary.dark,
+            color: theme.palette.secondary.main,
             fontSize: '0.9em',
         },
         added: {
