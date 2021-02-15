@@ -1,147 +1,110 @@
 import asyncio
-import re
-from datetime import datetime
-from random import randint
-from time import sleep
-from typing import List, Union
-
-import httpx
-from app.common import find_float, find_int, get_interval, print_new_listing
-from app.models import Apartment
-from bs4 import BeautifulSoup
+from typing import List
+from app.common import SkipListing
+from app.scrapers.base import BaseScraper
 from odmantic import AIOEngine
 
-BASE_URL = "https://www.maartenmakelaardij.nl"
-MAKELAARDIJ = "maarten"
-CITY = "rotterdam"
-
-PAGE_DELAY = 1
-LISTING_DELAY = 2
-JITTER = 2
 
 engine = AIOEngine(database="aanbod")
 
 
-async def main():
-    apartment_urls = await scrape_page()
-    sleep(PAGE_DELAY)
+class MaartenScraper(BaseScraper):
 
-    print(
-        f"[{datetime.now().isoformat(' ', 'seconds')}] {MAKELAARDIJ}    | Scraped {len(apartment_urls)} listings"
-    )
+    MAKELAARDIJ: str = "maarten"
+    BASE_URL: str = "https://www.maartenmakelaardij.nl"
 
-    for url in apartment_urls:
-        listing = await engine.find_one(Apartment, Apartment.url == f"{url}")
+    # Specific functions
+    @staticmethod
+    async def extract_object_urls(soup) -> str:
+        """
+        Extract apartment object urls
+        """
+        items = soup.find_all("a")
+        urls = []
+        for item in items:
+            if "woning/rotterdam-" in item["href"]:
+                urls.append(item["href"])
 
-        if listing is None:
-            listing_data = await scrape_item(url)
-            apartment = Apartment.parse_obj(listing_data)
+        return list(set(urls))
 
-            print_new_listing(MAKELAARDIJ, apartment.address)
-            await engine.save(apartment)
-            sleep(get_interval(LISTING_DELAY, JITTER))
+    async def get_page_url(self, page_num: int) -> str:
+        """
+        Format page url
+        """
+        return f"{self.BASE_URL}/aanbod/rotterdam/"
 
+    async def get_apartment_urls(self) -> List[str]:
+        """
+        Fetch list of apartment urls from inventory
+        """
+        urls = await self.scrape_page(0)
+        return urls
 
-async def scrape_page() -> List[str]:
-    url = f"{BASE_URL}/aanbod/{CITY}/"
+    def extract_features(self, soup):
+        """
+        Extract feature metadata from listing
+        """
+        meta_data = {
+            "makelaardij": self.MAKELAARDIJ,
+            "building": {},
+            "unit": {"energy": {}, "tags": []},
+        }
 
-    async with httpx.AsyncClient() as client:
-        result = await client.get(url)
+        dt = soup.find_all("dt")
+        dd = soup.find_all("dd")
 
-    # Check for good status
-    if not result.status_code == 200:
-        print(f"Error: {result}")
-        return []
+        # Features
+        for ind, key in enumerate(dt):
 
-    # Extract HTML
-    soup = BeautifulSoup(result.content, "html.parser")
-    items = soup.find_all("a")
+            if "Bouwjaar" in key.string:
+                meta_data["building"]["year_constructed"] = self.find_int(
+                    dd[ind].string
+                )
 
-    # Extract apartment object urls
-    urls = []
-    for item in items:
-        if "woning/rotterdam-" in item["href"]:
-            urls.append(item["href"])
+            elif "Woonoppervlakte" in key.string:
+                meta_data["unit"]["area"] = self.find_float(dd[ind].text.split(" ")[0])
 
-    return list(set(urls))
+            elif "Aantal kamers" in key.string:
+                meta_data["unit"]["num_rooms"] = self.find_int(dd[ind].text)
 
+            elif "verdiepingen" in key.string:
+                meta_data["unit"]["num_floors"] = self.find_int(dd[ind].text)
 
-async def scrape_item(item_url: str):
-    async with httpx.AsyncClient() as client:
-        result = await client.get(item_url)
+            elif "Status" in key.string:
+                meta_data["available"] = "Beschikbaar" in dd[ind].text
 
-    # Check for good status
-    if result.status_code == 404:
-        print("Warning, property skipped, not found")
-    elif not result.status_code == 200:
-        raise Exception(f"Error: {result}")
+            elif "Buitenruimte" in key.string and "TUIN" in dd[ind].text:
+                meta_data["unit"]["tags"].append("garden")
 
-    # Extract HTML
-    soup = BeautifulSoup(result.content, "html.parser")
+        # Other fields
+        meta_data["address"] = soup.find("span", {"class": "adres"}).string
+        meta_data["asking_price"] = self.find_int(
+            soup.find("span", {"class": "price"}).string.replace(".", "")
+        )
 
-    item_data = extract_features(soup)
-    item_data["url"] = item_url
+        description = soup.find("div", {"id": "read-more-content"}).children
+        for p in description:
+            p_text = str(p.text)
+            if "Eigen grond" in p_text:
+                meta_data["unit"]["own_land"] = True
+            elif "erfpacht" in p_text:
+                meta_data["unit"]["own_land"] = False
 
-    return item_data
+            if "Energielabel" in p_text:
+                label = p_text.split("Energielabel: ")[1][0]
+                meta_data["unit"]["energy"]["label"] = label
 
+            break
 
-def extract_features(soup):
-    """
-    Extract feature metadata from listing
-    """
-    meta_data = {
-        "makelaardij": MAKELAARDIJ,
-        "building": {},
-        "unit": {"energy": {}, "tags": []},
-    }
+        # Bounce broken listings
+        if not meta_data["unit"].get("area"):
+            raise SkipListing("Unable to find area")
 
-    dt = soup.find_all("dt")
-    dd = soup.find_all("dd")
-
-    # Features
-    for ind, key in enumerate(dt):
-
-        if "Bouwjaar" in key.string:
-            meta_data["building"]["year_constructed"] = find_int(dd[ind].string)
-
-        elif "Woonoppervlakte" in key.string:
-            meta_data["unit"]["area"] = find_float(dd[ind].text.split(" ")[0])
-
-        elif "Aantal kamers" in key.string:
-            meta_data["unit"]["num_rooms"] = find_int(dd[ind].text)
-
-        elif "verdiepingen" in key.string:
-            meta_data["unit"]["num_floors"] = find_int(dd[ind].text)
-
-        elif "Status" in key.string:
-            meta_data["available"] = "Beschikbaar" in dd[ind].text
-
-        elif "Buitenruimte" in key.string and "TUIN" in dd[ind].text:
-            meta_data["unit"]["tags"].append("garden")
-
-    # Other fields
-    meta_data["address"] = soup.find("span", {"class": "adres"}).string
-    meta_data["asking_price"] = find_int(
-        soup.find("span", {"class": "price"}).string.replace(".", "")
-    )
-
-    description = soup.find("div", {"id": "read-more-content"}).children
-    for p in description:
-        p_text = str(p.text)
-        if "Eigen grond" in p_text:
-            meta_data["unit"]["own_land"] = True
-        elif "erfpacht" in p_text:
-            meta_data["unit"]["own_land"] = False
-
-        if "Energielabel" in p_text:
-            label = p_text.split("Energielabel: ")[1][0]
-            meta_data["unit"]["energy"]["label"] = label
-
-        break
-
-    return meta_data
+        return meta_data
 
 
 if __name__ == "__main__":
+    scraper = MaartenScraper()
+
     loop = asyncio.get_event_loop()
-    loop.run_until_complete(main())
+    loop.run_until_complete(scraper.start())

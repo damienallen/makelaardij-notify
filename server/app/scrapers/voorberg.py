@@ -19,7 +19,6 @@ class VoorbergScraper(BaseScraper):
     async def extract_object_urls(soup) -> str:
         """
         Extract apartment object urls
-        [OVERRIDE]
         """
         urls = []
 
@@ -33,14 +32,12 @@ class VoorbergScraper(BaseScraper):
     async def get_page_url(self, page_num: int) -> str:
         """
         Format page url
-        [OVERRIDE]
         """
         return f"{self.BASE_URL}/page/{page_num}/{self.QUERY}"
 
     async def get_apartment_urls(self) -> List[str]:
         """
         Fetch list of apartment urls from inventory
-        [OVERRIDE]
         """
         urls = []
         page_limit = 20
@@ -60,7 +57,6 @@ class VoorbergScraper(BaseScraper):
     def extract_features(self, soup):
         """
         Extract feature metadata from listing
-        [OVERRIDE]
         """
         meta_data = {
             "makelaardij": self.MAKELAARDIJ,
@@ -146,7 +142,6 @@ class VoorbergScraper(BaseScraper):
     def find_date(date_str: Union[str, None]) -> Union[datetime, None]:
         """
         Parse date string
-        [OVERRIDE]
         """
         if not date_str:
             return None
