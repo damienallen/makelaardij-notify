@@ -2,7 +2,7 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 
 import { App } from './App'
-import { StoreProvider } from './stores'
+import { StoreProvider } from './stores/root'
 import './index.css'
 
 import firebase from 'firebase/app'

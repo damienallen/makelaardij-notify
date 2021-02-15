@@ -5,7 +5,7 @@ import { CssBaseline, Container } from '@material-ui/core'
 
 import { ApartmentList } from './ApartmentList'
 import { NavBar } from './NavBar'
-import { useStores } from '../stores'
+import { useStores } from '../stores/root'
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({

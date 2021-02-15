@@ -4,7 +4,7 @@ import { createStyles, Theme, makeStyles } from '@material-ui/core/styles'
 import { Divider, List, ListSubheader } from '@material-ui/core'
 
 import { Listing } from './Listing'
-import { useStores } from '../stores'
+import { useStores } from '../stores/root'
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -25,7 +25,7 @@ export const ApartmentList: React.FC = observer(() => {
 
     const now = new Date()
     const today = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59)
-    console.log(today, today.getTime())
+
     const threholds = [
         { label: 'Today', value: 0 },
         { label: 'Yesterday', value: 1 },

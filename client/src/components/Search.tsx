@@ -4,7 +4,7 @@ import { createStyles, fade, Theme, makeStyles } from '@material-ui/core/styles'
 import { Input } from '@material-ui/core'
 import { BiSearch } from 'react-icons/bi'
 
-import { useStores } from '../stores'
+import { useStores } from '../stores/root'
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({

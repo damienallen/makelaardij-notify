@@ -7,7 +7,7 @@ import { createStyles, Theme, makeStyles } from '@material-ui/core/styles'
 import { ListItem, Link } from '@material-ui/core'
 import { BiArea, BiDetail, BiHomeAlt, BiPurchaseTag, BiRightArrow } from 'react-icons/bi'
 
-import { Apartment } from '../stores'
+import { Apartment } from '../stores/apartments'
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({

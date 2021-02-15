@@ -3,7 +3,7 @@ import { observer } from 'mobx-react'
 import { createStyles, Theme, makeStyles } from '@material-ui/core/styles'
 import { Radio, FormControlLabel, RadioGroup, ListItem } from '@material-ui/core'
 
-import { useStores } from '../../stores'
+import { useStores } from '../../stores/root'
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({

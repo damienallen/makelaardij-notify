@@ -8,7 +8,7 @@ import { AreaRange } from './filters/AreaRange'
 import { Availability } from './filters/Availability'
 import { PriceRange } from './filters/PriceRange'
 import { YearRange } from './filters/YearRange'
-import { useStores } from '../stores'
+import { useStores } from '../stores/root'
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({

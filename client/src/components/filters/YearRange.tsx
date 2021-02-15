@@ -4,7 +4,8 @@ import { createStyles, Theme, makeStyles } from '@material-ui/core/styles'
 import { ListItem, Slider } from '@material-ui/core'
 import { BiHomeAlt } from 'react-icons/bi'
 
-import { useStores, debounceDelay, minYear, maxYear } from '../../stores'
+import { useStores } from '../../stores/root'
+import { debounceDelay, minYear, maxYear } from '../../stores/filters'
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
