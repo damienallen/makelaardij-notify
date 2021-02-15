@@ -2,6 +2,14 @@ import re
 from random import randint
 
 
+class MissingListing(Exception):
+    pass
+
+
+class SkipListing(Exception):
+    pass
+
+
 class InvalidListing(Exception):
     pass
 
