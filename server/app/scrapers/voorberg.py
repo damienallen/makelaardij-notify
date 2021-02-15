@@ -38,7 +38,7 @@ async def main(update_existing: bool = False):
         page_index += 1
 
     print(
-        f"[{datetime.now().isoformat(' ', 'seconds')}] {MAKELAARDIJ} | Scraped {len(apartment_urls)} listings"
+        f"[{datetime.now().isoformat(' ', 'seconds')}] {MAKELAARDIJ}    | Scraped {len(apartment_urls)} listings"
     )
 
     if False:
@@ -107,7 +107,8 @@ async def scrape_item(item_url: str):
     addr = item_url.split("/")[-2].replace("-", " ").replace("rotterdam", "")
 
     print(
-        f"[{datetime.now().isoformat(' ', 'seconds')}] {MAKELAARDIJ} + {addr} ", end=""
+        f"[{datetime.now().isoformat(' ', 'seconds')}] {MAKELAARDIJ}    + {addr} ",
+        end="",
     )
     async with httpx.AsyncClient() as client:
         result = await client.get(item_url)

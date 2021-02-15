@@ -36,6 +36,9 @@ class Apartment(Model):
     makelaardij: str
     asking_price: int
     address: str
+    neighborhood: Optional[str] = None
+    location: Optional[List[float]] = None
+
     url: str
     photos: List[str] = Field(default_factory=list)
     available: bool = True

@@ -27,7 +27,7 @@ async def main():
     sleep(PAGE_DELAY)
 
     print(
-        f"[{datetime.now().isoformat(' ', 'seconds')}] {MAKELAARDIJ} | Scraped {len(apartment_urls)} listings"
+        f"[{datetime.now().isoformat(' ', 'seconds')}] {MAKELAARDIJ}    | Scraped {len(apartment_urls)} listings"
     )
 
     for url in apartment_urls:
@@ -72,7 +72,8 @@ async def scrape_item(item_url: str):
     addr = item_url.split("/")[-2].split("rotterdam-")[1].replace("-", " ")
 
     print(
-        f"[{datetime.now().isoformat(' ', 'seconds')}] {MAKELAARDIJ} + {addr} ", end=""
+        f"[{datetime.now().isoformat(' ', 'seconds')}] {MAKELAARDIJ}     + {addr} ",
+        end="",
     )
     async with httpx.AsyncClient() as client:
         result = await client.get(item_url)
