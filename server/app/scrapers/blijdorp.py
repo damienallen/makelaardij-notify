@@ -141,7 +141,8 @@ def extract_features(features):
     return {
         "makelaardij": MAKELAARDIJ,
         "asking_price": find_int(raw_data["Vraagprijs"]),
-        "available": "Status" not in raw_data,
+        "available": "Status" not in raw_data
+        or raw_data.get("Status") == "Nieuw in verkoop",
         "unit": {
             "area": find_float(raw_data["Gebruiksoppervlakte wonen"]),
             "volume": find_float(raw_data["Inhoud"]),
