@@ -2,10 +2,6 @@ import asyncio
 from typing import List
 from app.common import SkipListing
 from app.scrapers.base import BaseScraper
-from odmantic import AIOEngine
-
-
-engine = AIOEngine(database="aanbod")
 
 
 class MaartenScraper(BaseScraper):

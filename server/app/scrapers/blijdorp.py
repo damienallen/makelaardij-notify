@@ -3,12 +3,6 @@ from datetime import datetime
 from typing import List, Union
 from app.common import SkipListing, months_nl
 from app.scrapers.base import BaseScraper
-from odmantic import AIOEngine
-
-
-engine = AIOEngine(database="aanbod")
-
-CITY = "rotterdam"
 
 
 class BlijdorpScraper(BaseScraper):

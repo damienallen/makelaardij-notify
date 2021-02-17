@@ -3,10 +3,6 @@ from datetime import datetime
 from typing import List, Union
 from app.common import SkipListing
 from app.scrapers.base import BaseScraper
-from odmantic import AIOEngine
-
-
-engine = AIOEngine(database="aanbod")
 
 
 class VoorbergScraper(BaseScraper):

@@ -1,5 +1,4 @@
 import asyncio
-import json
 import re
 from datetime import datetime
 from random import randint
@@ -278,7 +277,7 @@ class BaseScraper:
         """
         Sleep for jittered interval
         """
-        return self.WAIT + randint(-self.JITTER * 10, self.JITTER * 10) / 10
+        sleep(self.WAIT + randint(-self.JITTER * 10, self.JITTER * 10) / 10)
 
 
 if __name__ == "__main__":
