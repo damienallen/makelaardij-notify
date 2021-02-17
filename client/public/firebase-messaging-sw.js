@@ -23,7 +23,7 @@ messaging.onBackgroundMessage(function (payload) {
     const notificationTitle = payload.notification.title
     const notificationOptions = {
         body: payload.notification.body,
-        tags: ['new'],
+        icon: payload.notification.image,
     }
 
     self.registration.showNotification(notificationTitle, notificationOptions)
