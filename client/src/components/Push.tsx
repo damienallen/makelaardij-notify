@@ -10,18 +10,22 @@ export const Push: React.FC = observer(() => {
     const { settings } = useStores()
 
     const checkPermission = () => {
-        getToken((found: boolean) => settings.setPushAllowed(found))
+        getToken((token: string) => settings.setFCMToken(token))
     }
 
-    return !settings.pushAllowed ? (
+    const noTokenIcon = (
         <IconButton color="inherit" onClick={() => checkPermission()}>
-            <Badge color="secondary" variant="dot">
+            <Badge color="error" variant="dot">
                 <BiBellOff />
             </Badge>
         </IconButton>
-    ) : (
+    )
+
+    const icon = (
         <IconButton color="inherit" onClick={() => settings.togglePushEnabled()}>
             {settings.pushEnabled ? <BiBell /> : <BiBellOff />}
         </IconButton>
     )
+
+    return settings.fcmToken === '' ? noTokenIcon : icon
 })

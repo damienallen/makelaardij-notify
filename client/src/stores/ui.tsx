@@ -5,10 +5,15 @@ import { lightTheme, darkTheme } from '../theme'
 import { RootStore } from './root'
 
 export class UIStore {
+    @observable alertNew: boolean = false
     @observable filtersOpen: boolean = false
 
     @observable dark: boolean = false
     @observable theme: Theme = lightTheme
+
+    @action setAlertNew(value: boolean) {
+        this.alertNew = value
+    }
 
     @action setFiltersOpen(value: boolean) {
         this.filtersOpen = value

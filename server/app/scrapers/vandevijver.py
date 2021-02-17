@@ -34,7 +34,6 @@ class VandevijverScraper(BaseScraper):
         """
         Fetch list of apartment urls from inventory
         """
-
         urls = await self.scrape_page(0)
         return urls
 

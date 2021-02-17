@@ -1,4 +1,5 @@
 import { action, computed, makeObservable, observable } from 'mobx'
+import { onMessageListener } from '../firebase'
 
 import { RootStore } from './root'
 
@@ -6,7 +7,7 @@ export class SettingStore {
     @observable host: string = 'https://aanbod.dallen.dev/api'
     @observable token: string | null = null
 
-    @observable pushAllowed: boolean = false
+    @observable fcmToken: string = ''
     @observable pushEnabled: boolean = false
 
     @action setHost(value: string) {
@@ -21,9 +22,20 @@ export class SettingStore {
         this.token = null
     }
 
-    @action setPushAllowed(value: boolean) {
-        this.pushAllowed = value
-        if (value) this.pushEnabled = true
+    @action setFCMToken(value: string) {
+        this.fcmToken = value
+        if (value) {
+            // Register message handler
+            console.log('Registering FCM listener')
+            onMessageListener()
+                .then((payload: any) => {
+                    console.log('FCM payload: ', payload)
+                    this.root.ui.setAlertNew(true)
+                    this.root.apartments.fetch()
+                })
+                .catch((err: any) => console.log('FCM failed: ', err))
+            this.pushEnabled = true
+        }
     }
 
     @action setPushEnabled(value: boolean) {

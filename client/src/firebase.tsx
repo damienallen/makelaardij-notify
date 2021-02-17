@@ -16,24 +16,22 @@ const messaging = firebase.messaging()
 const messagingKey =
     'BAE1htPUauAQLnOX9eXvBV0C-56pT9aWopiIvhJTCjSsLJf_IBU5iQju458cpOSCFfT_8N_PAf6zn4nHmt8cSAU'
 
-export const getToken = (setTokenFound: any) => {
+export const getToken = (setToken: any) => {
     return messaging
         .getToken({ vapidKey: messagingKey })
         .then((currentToken) => {
             if (currentToken) {
-                console.log('current token for client: ', currentToken)
-                setTokenFound(true)
+                console.log('FCM client token: ')
+                console.log(currentToken)
+                setToken(currentToken)
                 // Track the token -> client mapping, by sending to backend server
-                // show on the UI that permission is secured
             } else {
-                console.log('No registration token available. Request permission to generate one.')
-                setTokenFound(false)
-                // shows on the UI that permission is required
+                console.debug('No registration token available, requesting permission...')
+                setToken('')
             }
         })
         .catch((err) => {
             console.log('An error occurred while retrieving token. ', err)
-            // catch error while creating client token
         })
 }
 

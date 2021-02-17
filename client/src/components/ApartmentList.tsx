@@ -38,7 +38,7 @@ export const ApartmentList: React.FC = observer(() => {
     ]
 
     const numListings = apartments.filteredList.length
-    let listItems = []
+    let listItems = [<div id="top-anchor" key="scroll-top" />]
 
     for (let i = 0; i < numListings; i++) {
         const a = apartments.filteredList[i]

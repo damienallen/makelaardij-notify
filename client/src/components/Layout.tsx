@@ -5,6 +5,7 @@ import { CssBaseline, Container } from '@material-ui/core'
 
 import { ApartmentList } from './ApartmentList'
 import { NavBar } from './NavBar'
+import { ScrollTop } from './ScrollTop'
 import { useStores } from '../stores/root'
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -31,6 +32,7 @@ export const Layout: React.FC = observer(() => {
                 <Container maxWidth="lg" className={classes.container}>
                     <ApartmentList />
                 </Container>
+                <ScrollTop />
             </main>
             <NavBar />
         </ThemeProvider>
