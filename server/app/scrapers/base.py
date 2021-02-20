@@ -8,6 +8,7 @@ from pydantic.error_wrappers import ValidationError as PydanticError
 
 import httpx
 from app.common import MissingListing, SkipListing
+from app.broadcast import broadcast_apartment
 from app.models import Apartment
 from bs4 import BeautifulSoup
 from odmantic import AIOEngine
@@ -56,9 +57,12 @@ class BaseScraper:
                 self.print_header(f"+ {apartment.address}")
                 print(listing_data)
 
+                await broadcast_apartment(apartment)
+
             elif listing is None:
                 self.print_header(f"+ {apartment.address}")
                 await engine.save(apartment)
+                await broadcast_apartment(apartment)
 
             else:
                 listing.asking_price = apartment.asking_price
