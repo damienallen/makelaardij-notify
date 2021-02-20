@@ -66,5 +66,6 @@ class FilterSettings(EmbeddedModel):
 
 
 class Subscription(Model):
+    active: bool = True
     token: str
     filter: FilterSettings

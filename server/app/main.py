@@ -2,7 +2,7 @@ import os
 from datetime import datetime
 from typing import List
 
-from fastapi import Depends, FastAPI, HTTPException, Request, status
+from fastapi import Depends, FastAPI, HTTPException, Request, Response, status
 from fastapi.middleware.cors import CORSMiddleware
 from models import Apartment, Subscription
 from motor.motor_asyncio import AsyncIOMotorClient
@@ -74,7 +74,7 @@ async def get_apartment(oid: str, response_model=Apartment):
 
 
 # FCM
-@app.get("/api/subs/", response_model=List[Subscription])
+@app.get("/api/subs/list/", response_model=List[Subscription])
 async def list_subs(request: Request):
     """
     List all subscription objects
@@ -90,13 +90,23 @@ async def list_subs(request: Request):
     return subs
 
 
-@app.post("/api/subs/add/")
-async def list_subs(sub: Subscription, status_code=status.HTTP_201_CREATED):
+@app.post("/api/subs/")
+async def update_sub(sub: Subscription, response: Response):
     """
-    List all subscription objects
+    Add/update subscription object
     """
-    await engine.save(sub)
-    return {"detail": "Subscription added", "id": str(sub.id)}
+    existing = await engine.find_one(Subscription, Subscription.token == sub.token)
+    if existing is not None:
+        existing.active = sub.active
+        existing.filter = sub.filter
+        await engine.save(existing)
+        response.status_code = status.HTTP_200_OK
+        return {"detail": "Subscription updated", "id": str(sub.id)}
+
+    else:
+        await engine.save(sub)
+        response.status_code = status.HTTP_201_CREATED
+        return {"detail": "Subscription added", "id": str(sub.id)}
 
 
 @app.get("/api/subs/clear/")

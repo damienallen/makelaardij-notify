@@ -21,10 +21,9 @@ export const getToken = (setToken: any) => {
         .getToken({ vapidKey: messagingKey })
         .then((currentToken) => {
             if (currentToken) {
-                console.log('FCM client token: ')
-                console.log(currentToken)
+                console.debug('FCM client token: ')
+                console.debug(currentToken)
                 setToken(currentToken)
-                // Track the token -> client mapping, by sending to backend server
             } else {
                 console.debug('No registration token available, requesting permission...')
                 setToken('')

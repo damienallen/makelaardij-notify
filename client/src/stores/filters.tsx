@@ -75,19 +75,19 @@ export class FilterStore {
     @action setPriceRange(value: number[]) {
         this.priceRange = value
         this.root.cookies.set('priceRange', value, { path: '/', sameSite: 'lax', maxAge: 31536000 })
-        this.updateSubscription()
+        this.root.settings.updateSubscription()
     }
 
     @action setAreaRange(value: number[]) {
         this.areaRange = value
         this.root.cookies.set('areaRange', value, { path: '/', sameSite: 'lax', maxAge: 31536000 })
-        this.updateSubscription()
+        this.root.settings.updateSubscription()
     }
 
     @action setYearRange(value: number[]) {
         this.yearRange = value
         this.root.cookies.set('yearRange', value, { path: '/', sameSite: 'lax', maxAge: 31536000 })
-        this.updateSubscription()
+        this.root.settings.updateSubscription()
     }
 
     @action setAvailability(value: string) {
@@ -97,7 +97,7 @@ export class FilterStore {
             sameSite: 'lax',
             maxAge: 31536000,
         })
-        this.updateSubscription()
+        this.root.settings.updateSubscription()
     }
 
     @action setDebounceTimeout(key: string, value: any) {
@@ -106,28 +106,6 @@ export class FilterStore {
 
     @action clearDebounceTimeout(key: string) {
         this.debounceTimeout[key] = null
-    }
-
-    updateSubscription() {
-        const sub = {
-            filter: {
-                price: {
-                    high: this.priceRange[1],
-                    low: this.priceRange[0],
-                },
-                area: {
-                    high: this.areaRange[1],
-                    low: this.areaRange[0],
-                },
-                year: {
-                    high: this.yearRange[1],
-                    low: this.yearRange[0],
-                },
-                availability: this.availability,
-            },
-            token: this.root.settings.fcmToken,
-        }
-        console.log('Send', sub)
     }
 
     constructor(public root: RootStore) {

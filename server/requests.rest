@@ -8,12 +8,8 @@ GET https://aanbod.dallen.dev/api/apartments/ HTTP/1.1
 GET https://aanbod.dallen.dev/api/apartments/clear/ HTTP/1.1
 Master: dev_tokenz
 
-### List FCM subscriptions
-GET https://aanbod.dallen.dev/api/subs/ HTTP/1.1
-Master: dev_token
-
 ### Add FCM subscriptions
-POST https://aanbod.dallen.dev/api/subs/add/ HTTP/1.1
+POST https://aanbod.dallen.dev/api/subs/ HTTP/1.1
 content-type: application/json
 
 {
@@ -34,6 +30,10 @@ content-type: application/json
   },
   "token": "abcde"
 }
+
+### List FCM subscriptions
+GET https://aanbod.dallen.dev/api/subs/list/ HTTP/1.1
+Master: dev_token
 
 ### Clear FCM subscriptions
 GET https://aanbod.dallen.dev/api/subs/clear/ HTTP/1.1
