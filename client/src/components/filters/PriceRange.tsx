@@ -46,8 +46,8 @@ export const PriceRange: React.FC = observer(() => {
 
     const marks = [
         {
-            value: 225,
-            label: '225 K',
+            value: 230,
+            label: '230 K',
         },
         {
             value: 325,

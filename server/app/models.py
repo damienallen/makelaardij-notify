@@ -51,3 +51,20 @@ class Apartment(Model):
     entry_updated: datetime = Field(default_factory=datetime.utcnow)
     added: Optional[datetime] = None
     updated: Optional[datetime] = None
+
+
+class Range(EmbeddedModel):
+    high: int
+    low: int
+
+
+class FilterSettings(EmbeddedModel):
+    area: Range
+    price: Range
+    year: Range
+    availability: str
+
+
+class Subscription(Model):
+    token: str
+    filter: FilterSettings

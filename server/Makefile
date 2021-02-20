@@ -1,3 +1,4 @@
+# Scrapers
 scrape:
 	python -m app.scrapers.blijdorp
 	python -m app.scrapers.maarten
@@ -18,3 +19,7 @@ vijver:
 
 voorberg:
 	python -m app.scrapers.voorberg
+
+# FCM
+broadcast:
+	python -m app.scripts.broadcast

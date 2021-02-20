@@ -15,11 +15,11 @@ export class RootStore {
 
     constructor() {
         this.cookies = new Cookies()
+        this.settings = new SettingStore(this)
 
         this.apartments = new ApartmentStore(this)
         this.filters = new FilterStore(this)
         this.ui = new UIStore(this)
-        this.settings = new SettingStore(this)
     }
 }
 
