@@ -14,17 +14,11 @@ var firebaseConfig = {
 
 firebase.initializeApp(firebaseConfig)
 
+// Click listener
+self.addEventListener('notificationclick', function (event) {
+    event.notification.close()
+    event.waitUntil(clients.openWindow(event.notification.data.FCM_MSG.data['url']))
+})
+
 // Retrieve firebase messaging
 const messaging = firebase.messaging()
-
-messaging.onBackgroundMessage(function (payload) {
-    console.log('Received background message ', payload)
-
-    const notificationTitle = payload.notification.title
-    const notificationOptions = {
-        body: payload.notification.body,
-        icon: payload.notification.image,
-    }
-
-    self.registration.showNotification(notificationTitle, notificationOptions)
-})
