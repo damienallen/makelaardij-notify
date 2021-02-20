@@ -11,8 +11,14 @@ base:
 blijdorp:
 	python -m app.scrapers.blijdorp
 
+kleef:
+	python -m app.scrapers.vankleef
+
 maarten:
 	python -m app.scrapers.maarten
+
+real:
+	python -m app.scrapers.realworks
 
 vijver:
 	python -m app.scrapers.vandevijver
