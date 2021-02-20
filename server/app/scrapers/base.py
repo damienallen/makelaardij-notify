@@ -56,13 +56,12 @@ class BaseScraper:
             if debug_mode:
                 self.print_header(f"+ {apartment.address}")
                 print(listing_data)
-
                 # await broadcast_apartment(apartment)
 
             elif listing is None:
                 self.print_header(f"+ {apartment.address}")
                 await engine.save(apartment)
-                # await broadcast_apartment(apartment)
+                await broadcast_apartment(apartment)
 
             else:
                 listing.asking_price = apartment.asking_price

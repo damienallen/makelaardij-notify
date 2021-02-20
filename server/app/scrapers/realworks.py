@@ -60,10 +60,14 @@ class RealWorksScraper(BaseScraper):
             if name is None or value is None:
                 continue
 
-            if "Vraagprijs" in name.text or "Koopsom" in name.text:
+            if (
+                "Vraagprijs" in name.text
+                or "Koopsom" in name.text
+                or "Prijs" in name.text
+            ):
                 meta_data["asking_price"] = self.find_int(value.text)
 
-            elif "Bouwjaar" in name.text:
+            elif "Bouwjaar" in name.text and not "n.v.t." in value.text:
                 meta_data["building"]["year_constructed"] = self.find_int(value.text)
 
             elif "Woonoppervlakte" in name.text:
