@@ -1,5 +1,6 @@
 import asyncio
 from typing import List
+
 from app.common import SkipListing
 from app.scrapers.base import BaseScraper
 
@@ -103,4 +104,4 @@ if __name__ == "__main__":
     scraper = MaartenScraper()
 
     loop = asyncio.get_event_loop()
-    loop.run_until_complete(scraper.start(debug_mode=True))
+    loop.run_until_complete(scraper.start())
