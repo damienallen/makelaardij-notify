@@ -22,4 +22,4 @@ voorberg:
 
 # FCM
 broadcast:
-	python -m app.scripts.broadcast
+	python -m app.broadcast

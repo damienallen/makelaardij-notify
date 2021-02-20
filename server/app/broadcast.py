@@ -14,20 +14,20 @@ firebase_admin.initialize_app(cred)
 engine = AIOEngine(database="aanbod")
 
 
-async def broadcast():
+async def broadcast(title: str, body: str, url: str):
     subs = await engine.find(Subscription)
     print(f"Found {len(subs)} subscriptions")
 
     for s in subs:
         if s.active:
-            n = messaging.WebpushNotification(title="Hallo", body="Rotjeknor")
+            n = messaging.WebpushNotification(title=title, body=body)
             w = messaging.WebpushConfig(
                 notification=n,
             )
 
             message = messaging.Message(
                 data={
-                    "url": "https://dallen.co",
+                    "url": url,
                     "time": datetime.now().isoformat(),
                 },
                 webpush=w,
@@ -35,8 +35,7 @@ async def broadcast():
             )
 
             try:
-                resp = messaging.send(message)
-                print("Successfully sent message:", resp)
+                messaging.send(message)
             except (
                 firebase_admin._messaging_utils.UnregisteredError,
                 firebase_admin.exceptions.InternalError,
@@ -46,4 +45,6 @@ async def broadcast():
 
 if __name__ == "__main__":
     loop = asyncio.get_event_loop()
-    loop.run_until_complete(broadcast())
+    loop.run_until_complete(
+        broadcast("Hallo", "Rotterdam", "https://aanbod.dallen.dev")
+    )
