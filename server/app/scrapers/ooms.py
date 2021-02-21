@@ -118,7 +118,7 @@ class OomsScraper(BaseScraper):
         meta_data["building"]["year_constructed"] = item_data.get("build_year")
 
         if created_at := item_data.get("created_at"):
-            meta_data["added"] = datetime.fromisoformat(created_at)
+            meta_data["added"] = datetime.fromisoformat(created_at.split("+")[0])
 
         if num_rooms := item_data.get("amount_of_rooms"):
             meta_data["unit"]["num_rooms"] = int(num_rooms)
