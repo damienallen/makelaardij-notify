@@ -25,7 +25,7 @@ class BaseScraper:
     WAIT: int = 2
     JITTER: int = 1
 
-    async def start(self, update_existing: bool = False, debug: bool = False):
+    async def start(self, update_existing: bool = False, debug: bool = False, quiet: bool = False):
         apartment_urls = await self.get_apartment_urls()
         self.print_header(f"| Scraped {len(apartment_urls)} listings")
         if debug and apartment_urls:
@@ -55,12 +55,12 @@ class BaseScraper:
             if debug:
                 self.print_header(f"+ {apartment.address}")
                 print(listing_data)
-                # await broadcast_apartment(apartment)
 
             elif listing is None:
                 self.print_header(f"+ {apartment.address}")
                 await engine.save(apartment)
-                await broadcast_apartment(apartment)
+                if not quiet:
+                    await broadcast_apartment(apartment)
 
             else:
                 listing.asking_price = apartment.asking_price

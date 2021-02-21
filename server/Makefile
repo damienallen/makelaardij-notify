@@ -14,6 +14,9 @@ real:
 	python -m app.scrapers.realworks
 
 # Makelaars
+baljon:
+	python -m app.scrapers.baljon
+
 blijdorp:
 	python -m app.scrapers.blijdorp
 
