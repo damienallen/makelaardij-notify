@@ -129,6 +129,8 @@ class BaljonScraper(BaseScraper):
         # Bounce broken listings
         if not meta_data["unit"].get("area"):
             raise SkipListing("Unable to find area")
+        elif "asking_price" in meta_data and meta_data["asking_price"] < 10000:
+            raise SkipListing("Rental property")
 
         return meta_data
 
@@ -137,4 +139,4 @@ if __name__ == "__main__":
     scraper = BaljonScraper()
 
     loop = asyncio.get_event_loop()
-    loop.run_until_complete(scraper.start(quiet=True))
+    loop.run_until_complete(scraper.start())

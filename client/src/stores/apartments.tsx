@@ -53,7 +53,7 @@ export class ApartmentStore {
     @observable list: Apartment[] = []
 
     @action setList(value: Apartment[]) {
-        this.list = value
+        this.list = value.filter((a: Apartment) => a.asking_price > 100000)
         this.list.sort((a: Apartment, b: Apartment) => {
             return this.getSortDate(b) - this.getSortDate(a)
         })
