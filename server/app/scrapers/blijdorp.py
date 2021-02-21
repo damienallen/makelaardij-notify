@@ -30,7 +30,7 @@ class BlijdorpScraper(BaseScraper):
         """
         Extract apartment object urls
         """
-        urls = []
+        urls: List[str] = []
 
         items = soup.find_all("a", {"class": "object_data_container"})
         for item in items:
@@ -49,7 +49,7 @@ class BlijdorpScraper(BaseScraper):
         """
         Fetch list of apartment urls from inventory
         """
-        urls = []
+        urls: List[str] = []
         skip_limit = 10
         skip_index = 0
 
@@ -87,7 +87,7 @@ class BlijdorpScraper(BaseScraper):
 
         # Photos
         photos = soup.find_all("img", {"class": "content"})
-        photo_urls = []
+        photo_urls: List[str] = []
         for photo in photos:
             photo_urls.append(photo["src"])
         meta_data["photos"] = photo_urls

@@ -25,17 +25,17 @@ class BaseScraper:
     WAIT: int = 2
     JITTER: int = 1
 
-    async def start(self, update_existing: bool = False, debug_mode: bool = False):
+    async def start(self, update_existing: bool = False, debug: bool = False):
         apartment_urls = await self.get_apartment_urls()
         self.print_header(f"| Scraped {len(apartment_urls)} listings")
-        if debug_mode:
+        if debug and apartment_urls:
             apartment_urls = [apartment_urls[0]]
 
         for url in apartment_urls:
             listing = await engine.find_one(Apartment, Apartment.url == f"{url}")
 
             # Skip existing if not outdated
-            if listing and not update_existing and not debug_mode:
+            if listing and not update_existing and not debug:
                 continue
 
             # Otherwise scrape
@@ -52,7 +52,7 @@ class BaseScraper:
                 continue
 
             # Create or update DB entry
-            if debug_mode:
+            if debug:
                 self.print_header(f"+ {apartment.address}")
                 print(listing_data)
                 # await broadcast_apartment(apartment)
@@ -122,7 +122,7 @@ class BaseScraper:
         Extract apartment object urls
         [OVERRIDE]
         """
-        urls = []
+        urls: List[str] = []
 
         items = soup.find_all("a", {"class": ["action-button", "white"]})
         for item in items:
@@ -143,7 +143,7 @@ class BaseScraper:
         Fetch list of apartment urls from inventory
         [OVERRIDE]
         """
-        urls = []
+        urls: List[str] = []
         page_limit = 20
         page_index = 1
 
@@ -288,4 +288,4 @@ if __name__ == "__main__":
     scraper.MAKELAARDIJ = "voorberg"
 
     loop = asyncio.get_event_loop()
-    loop.run_until_complete(scraper.start(debug_mode=True))
+    loop.run_until_complete(scraper.start(debug=True))

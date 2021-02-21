@@ -16,7 +16,7 @@ class MaartenScraper(BaseScraper):
         Extract apartment object urls
         """
         items = soup.find_all("a")
-        urls = []
+        urls: List[str] = []
         for item in items:
             if "woning/rotterdam-" in item["href"]:
                 urls.append(item["href"])

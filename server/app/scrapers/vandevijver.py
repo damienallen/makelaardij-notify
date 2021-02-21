@@ -17,7 +17,7 @@ class VandevijverScraper(BaseScraper):
         Extract apartment object urls
         """
         items = soup.find_all("a", {"class": "portfolio-box-inner"})
-        urls = []
+        urls: List[str] = []
         for item in items:
             if "/woning/" in item.get("href"):
                 urls.append(item["href"])

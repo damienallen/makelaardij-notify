@@ -16,7 +16,7 @@ class VoorbergScraper(BaseScraper):
         """
         Extract apartment object urls
         """
-        urls = []
+        urls: List[str] = []
 
         items = soup.find_all("a", {"class": ["action-button", "white"]})
         for item in items:
@@ -35,7 +35,7 @@ class VoorbergScraper(BaseScraper):
         """
         Fetch list of apartment urls from inventory
         """
-        urls = []
+        urls: List[str] = []
         page_limit = 20
         page_index = 1
 

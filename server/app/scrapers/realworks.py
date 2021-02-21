@@ -17,7 +17,7 @@ class RealWorksScraper(BaseScraper):
         Extract apartment object urls
         """
         items = soup.find_all("a")
-        urls = []
+        urls: List[str] = []
         for item in items:
             item_url = item.get("href")
             if item_url and "koop/huis-" in item_url:
@@ -121,4 +121,4 @@ if __name__ == "__main__":
     scraper = RealWorksScraper()
 
     loop = asyncio.get_event_loop()
-    loop.run_until_complete(scraper.start(debug_mode=True))
+    loop.run_until_complete(scraper.start(debug=True))
