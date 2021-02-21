@@ -4,15 +4,14 @@ from datetime import datetime
 from random import randint
 from time import sleep
 from typing import List, Union
-from pydantic.error_wrappers import ValidationError as PydanticError
 
 import httpx
-from app.common import MissingListing, SkipListing
 from app.broadcast import broadcast_apartment
+from app.common import MissingListing, SkipListing
 from app.models import Apartment
 from bs4 import BeautifulSoup
 from odmantic import AIOEngine
-
+from pydantic.error_wrappers import ValidationError as PydanticError
 
 engine = AIOEngine(database="aanbod")
 
@@ -118,8 +117,7 @@ class BaseScraper:
         return item_data
 
     # Specific functions
-    @staticmethod
-    async def extract_object_urls(soup) -> str:
+    async def extract_object_urls(self, soup) -> List[str]:
         """
         Extract apartment object urls
         [OVERRIDE]

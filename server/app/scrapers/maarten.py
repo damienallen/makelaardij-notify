@@ -11,8 +11,7 @@ class MaartenScraper(BaseScraper):
     BASE_URL: str = "https://www.maartenmakelaardij.nl"
 
     # Specific functions
-    @staticmethod
-    async def extract_object_urls(soup) -> str:
+    async def extract_object_urls(self, soup) -> List[str]:
         """
         Extract apartment object urls
         """

@@ -12,7 +12,7 @@ class RealWorksScraper(BaseScraper):
     ITEM_COUNT: int = 80
 
     # Specific functions
-    async def extract_object_urls(self, soup) -> str:
+    async def extract_object_urls(self, soup) -> List[str]:
         """
         Extract apartment object urls
         """

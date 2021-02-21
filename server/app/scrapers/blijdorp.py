@@ -1,9 +1,9 @@
 import asyncio
 from datetime import datetime
 from typing import List, Union
+
 from app.common import SkipListing
 from app.scrapers.base import BaseScraper
-
 
 months_nl = {
     "januari": 1,
@@ -26,7 +26,7 @@ class BlijdorpScraper(BaseScraper):
     BASE_URL: str = "https://www.blijdorpmakelaardij.nl"
 
     # Specific functions
-    async def extract_object_urls(self, soup) -> str:
+    async def extract_object_urls(self, soup) -> List[str]:
         """
         Extract apartment object urls
         """

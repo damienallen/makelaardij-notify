@@ -32,6 +32,9 @@ m1:
 maarten:
 	python -m app.scrapers.maarten
 
+ooms:
+	python -m app.scaprers.ooms
+
 oosten:
 	python -m app.scrapers.vanoosten
 

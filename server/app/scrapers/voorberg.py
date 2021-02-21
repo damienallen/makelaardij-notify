@@ -1,6 +1,7 @@
 import asyncio
 from datetime import datetime
 from typing import List, Union
+
 from app.common import SkipListing
 from app.scrapers.base import BaseScraper
 
@@ -11,8 +12,7 @@ class VoorbergScraper(BaseScraper):
     QUERY: str = "?s=Rotterdam&min-koop=0&max-koop=2000000&min-huur=0&max-huur=5000&rooms=nvt&opp=nvt&post_type=properties&koop_huur=koop"
 
     # Specific functions
-    @staticmethod
-    async def extract_object_urls(soup) -> str:
+    async def extract_object_urls(self, soup) -> List[str]:
         """
         Extract apartment object urls
         """
