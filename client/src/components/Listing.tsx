@@ -4,8 +4,8 @@ import relativeTime from 'dayjs/plugin/relativeTime'
 import utc from 'dayjs/plugin/utc'
 import timezone from 'dayjs/plugin/timezone'
 import { createStyles, Theme, makeStyles } from '@material-ui/core/styles'
-import { ListItem, Link } from '@material-ui/core'
-import { BiArea, BiDetail, BiHomeAlt, BiPurchaseTag, BiRightArrow } from 'react-icons/bi'
+import { ListItem } from '@material-ui/core'
+import { BiArea, BiDetail, BiHomeAlt, BiPurchaseTag, BiRightArrow, BiMapAlt } from 'react-icons/bi'
 
 import { Apartment } from '../stores/apartments'
 
@@ -26,6 +26,7 @@ const useStyles = makeStyles((theme: Theme) =>
                 marginRight: 2,
                 verticalAlign: 'baseline',
             },
+            cursor: 'pointer',
         },
         left: {
             flex: 1,
@@ -63,6 +64,10 @@ const useStyles = makeStyles((theme: Theme) =>
         available: {
             color: theme.palette.success.main,
             marginLeft: theme.spacing(1),
+        },
+        mapIcon: {
+            color: theme.palette.text.hint,
+            padding: theme.spacing(0, 1, 0, 0.5),
         },
     })
 )
@@ -117,36 +122,50 @@ export const Listing: React.FC<Props> = ({ listing }) => {
             </span>
         ) : null
 
+    const mapQuery = listing.address.replaceAll(' ', '+') + ',+Rotterdam'
+    const mapsUrl = 'https://www.google.com/maps/search/?api=1&query=' + mapQuery
+
+    const openNewTab = (e: any, url: string) => {
+        const newWindow = window.open(url, '_blank', 'noopener,noreferrer')
+        if (newWindow) newWindow.opener = null
+        e.stopPropagation()
+    }
+
     return (
-        <ListItem alignItems="flex-start" classes={{ root: classes.root }}>
+        <ListItem
+            alignItems="flex-start"
+            classes={{ root: classes.root }}
+            onClick={(e: any) => openNewTab(e, listing.url)}
+        >
             <div className={classes.left}>
-                <Link href={listing.url} target="_blank" rel="noreferrer" color="inherit">
-                    <div className={classes.address}>{listing.address}</div>
-                    <div className={classes.makelaardij}>
-                        {listing.makelaardij}
-                        {listing.available ? (
-                            <span className={classes.available}>
-                                <BiRightArrow />
-                                Available
-                            </span>
-                        ) : null}
-                    </div>
-                    <div className={classes.meta}>
-                        {constructionYear}
-                        {floorArea}
-                        {energyLabel}
-                        {erfpacht}
-                    </div>
-                </Link>
+                <div className={classes.address}>
+                    {listing.address}{' '}
+                    <span className={classes.mapIcon} onClick={(e: any) => openNewTab(e, mapsUrl)}>
+                        <BiMapAlt />
+                    </span>
+                </div>
+                <div className={classes.makelaardij}>
+                    {listing.makelaardij}
+                    {listing.available ? (
+                        <span className={classes.available}>
+                            <BiRightArrow />
+                            Available
+                        </span>
+                    ) : null}
+                </div>
+                <div className={classes.meta}>
+                    {constructionYear}
+                    {floorArea}
+                    {energyLabel}
+                    {erfpacht}
+                </div>
             </div>
             <div className={classes.right}>
-                <Link href={listing.url} target="_blank" rel="noreferrer" color="inherit">
-                    <div className={classes.price}>€{Math.ceil(listing.asking_price / 1000)} K</div>
-                    <div className={classes.areaPrice}>
-                        €{Math.ceil(listing.asking_price / listing.unit.area)}/m&sup2;
-                    </div>
-                    <div className={classes.added}>{displayDate.fromNow()}</div>
-                </Link>
+                <div className={classes.price}>€{Math.ceil(listing.asking_price / 1000)} K</div>
+                <div className={classes.areaPrice}>
+                    €{Math.ceil(listing.asking_price / listing.unit.area)}/m&sup2;
+                </div>
+                <div className={classes.added}>{displayDate.fromNow()}</div>
             </div>
         </ListItem>
     )
