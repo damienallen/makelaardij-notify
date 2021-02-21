@@ -123,7 +123,9 @@ class OomsScraper(BaseScraper):
             meta_data["unit"]["num_rooms"] = int(num_rooms)
 
         garden_types = item_data.get("garden_types")
-        if "achtertuin" in garden_types or "voortuin" in garden_types:
+        if garden_types and (
+            "achtertuin" in garden_types or "voortuin" in garden_types
+        ):
             meta_data["unit"]["tags"].append("garden")
 
         # Bounce broken listings
