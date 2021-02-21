@@ -52,7 +52,6 @@ class OomsScraper(BaseScraper):
             if debug:
                 self.print_header(f"+ {apartment.address}")
                 print(listing_data)
-                # await broadcast_apartment(apartment)
 
             elif listing is None:
                 self.print_header(f"+ {apartment.address}")
@@ -138,4 +137,4 @@ if __name__ == "__main__":
     scraper = OomsScraper()
 
     loop = asyncio.get_event_loop()
-    loop.run_until_complete(scraper.start(debug=True))
+    loop.run_until_complete(scraper.start())
