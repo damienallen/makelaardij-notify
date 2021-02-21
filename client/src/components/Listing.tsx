@@ -5,9 +5,13 @@ import utc from 'dayjs/plugin/utc'
 import timezone from 'dayjs/plugin/timezone'
 import { createStyles, Theme, makeStyles } from '@material-ui/core/styles'
 import { ListItem } from '@material-ui/core'
-import { BiArea, BiDetail, BiHomeAlt, BiPurchaseTag, BiRightArrow, BiMapAlt } from 'react-icons/bi'
+import { BiArea, BiDetail, BiHomeAlt, BiPurchaseTag, BiMapAlt } from 'react-icons/bi'
 
 import { Apartment } from '../stores/apartments'
+
+type StyleProps = {
+    available: boolean
+}
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -41,29 +45,36 @@ const useStyles = makeStyles((theme: Theme) =>
         },
         makelaardij: {
             color: theme.palette.text.secondary,
-            textTransform: 'capitalize',
+            textTransform: 'uppercase',
+            fontSize: '0.8em',
+            padding: theme.spacing(0.5, 0),
         },
-        price: {
-            color: theme.palette.text.primary,
+        price: (props: StyleProps) => ({
+            color:
+                props.available === false
+                    ? theme.palette.text.secondary
+                    : theme.palette.text.primary,
             fontSize: '1.5em',
-        },
+            textDecoration: props.available === false ? 'line-through' : 'none',
+        }),
         areaPrice: {
-            color: theme.palette.secondary.main,
-            fontSize: '0.9em',
+            color: (props: StyleProps) =>
+                props.available === false ? theme.palette.text.hint : theme.palette.text.secondary,
+            fontSize: '0.8em',
         },
         added: {
             color: theme.palette.text.hint,
             marginTop: theme.spacing(1),
         },
         meta: {
-            marginTop: theme.spacing(1),
+            marginTop: theme.spacing(0.5),
             '& span': {
                 marginRight: theme.spacing(1),
             },
         },
-        available: {
-            color: theme.palette.success.main,
-            marginLeft: theme.spacing(1),
+        sold: {
+            color: theme.palette.error.main,
+            marginLeft: theme.spacing(0.5),
         },
         mapIcon: {
             color: theme.palette.text.hint,
@@ -77,7 +88,8 @@ type Props = {
 }
 
 export const Listing: React.FC<Props> = ({ listing }) => {
-    const classes = useStyles()
+    const styleProps: StyleProps = { available: listing.available }
+    const classes = useStyles(styleProps)
     dayjs.extend(relativeTime)
     dayjs.extend(utc)
     dayjs.extend(timezone)
@@ -146,12 +158,7 @@ export const Listing: React.FC<Props> = ({ listing }) => {
                 </div>
                 <div className={classes.makelaardij}>
                     {listing.makelaardij}
-                    {listing.available ? (
-                        <span className={classes.available}>
-                            <BiRightArrow />
-                            Available
-                        </span>
-                    ) : null}
+                    {!listing.available ? <span className={classes.sold}>Sold</span> : null}
                 </div>
                 <div className={classes.meta}>
                     {constructionYear}
