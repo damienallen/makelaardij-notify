@@ -119,12 +119,13 @@ export const Listing: React.FC<Props> = ({ listing }) => {
         </span>
     )
 
-    const energyLabel = listing.unit.energy.label ? (
-        <span>
-            <BiPurchaseTag />
-            {listing.unit.energy.label}
-        </span>
-    ) : null
+    const energyLabel =
+        listing.unit.energy.label && 'ABCDEFG'.includes(listing.unit.energy.label) ? (
+            <span>
+                <BiPurchaseTag />
+                {listing.unit.energy.label}
+            </span>
+        ) : null
 
     const erfpacht =
         listing.unit.own_land === false ? (
