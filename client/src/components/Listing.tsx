@@ -112,12 +112,13 @@ export const Listing: React.FC<Props> = ({ listing }) => {
         </span>
     ) : null
 
-    const floorArea = (
-        <span>
-            <BiArea />
-            {listing.unit.area} m&sup2;
-        </span>
-    )
+    const floorArea =
+        listing.unit.area > 0 ? (
+            <span>
+                <BiArea />
+                {listing.unit.area} m&sup2;
+            </span>
+        ) : null
 
     const energyLabel =
         listing.unit.energy.label && 'ABCDEFG'.includes(listing.unit.energy.label) ? (
@@ -171,7 +172,11 @@ export const Listing: React.FC<Props> = ({ listing }) => {
             <div className={classes.right}>
                 <div className={classes.price}>€{Math.ceil(listing.asking_price / 1000)} K</div>
                 <div className={classes.areaPrice}>
-                    €{Math.ceil(listing.asking_price / listing.unit.area)}/m&sup2;
+                    €
+                    {listing.unit.area > 0
+                        ? Math.ceil(listing.asking_price / listing.unit.area)
+                        : ' —'}
+                    /m&sup2;
                 </div>
                 <div className={classes.added}>{displayDate.fromNow()}</div>
             </div>
