@@ -5,7 +5,7 @@ import utc from 'dayjs/plugin/utc'
 import timezone from 'dayjs/plugin/timezone'
 import { createStyles, Theme, makeStyles } from '@material-ui/core/styles'
 import { ListItem } from '@material-ui/core'
-import { BiArea, BiDetail, BiHomeAlt, BiPurchaseTag, BiMapAlt } from 'react-icons/bi'
+import { BiArea, BiDetail, BiHomeAlt, BiPurchaseTag, BiMap } from 'react-icons/bi'
 
 import { Apartment } from '../stores/apartments'
 
@@ -153,7 +153,7 @@ export const Listing: React.FC<Props> = ({ listing }) => {
                 <div className={classes.address}>
                     {listing.address}{' '}
                     <span className={classes.mapIcon} onClick={(e: any) => openNewTab(e, mapsUrl)}>
-                        <BiMapAlt />
+                        <BiMap />
                     </span>
                 </div>
                 <div className={classes.makelaardij}>

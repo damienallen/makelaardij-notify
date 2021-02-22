@@ -44,6 +44,9 @@ oosten:
 prins:
 	python -m app.scrapers.prins
 
+teriele:
+	python -m app.scrapers.teriele
+
 woonvisie:
 	python -m app.scrapers.woonvisie
 
