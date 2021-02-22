@@ -3,13 +3,13 @@
   "name": "Makelaardij Aanbod",
   "icons": [
     {
-      "src": "home_icon_maskable.png",
+      "src": "assets/home_icon_maskable.png",
       "type": "image/png",
       "sizes": "512x512 192x192",
       "purpose": "maskable"
     },
     {
-      "src": "home_icon.png",
+      "src": "assets/home_icon.png",
       "type": "image/png",
       "sizes": "512x512 192x192",
       "purpose": "any"

@@ -68,8 +68,8 @@ async def send_message(s: Subscription, title: str, body: str, url: str):
     n = messaging.WebpushNotification(
         title=title,
         body=body,
-        icon="https://aanbod.dallen.dev/notify_icon.png",
-        badge="https://aanbod.dallen.dev/notify_badge.png",
+        icon="https://aanbod.dallen.dev/assets/notify_icon.png",
+        badge="https://aanbod.dallen.dev/assets/notify_badge.png",
     )
     w = messaging.WebpushConfig(
         notification=n,
