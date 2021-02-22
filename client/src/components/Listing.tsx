@@ -37,7 +37,7 @@ const useStyles = makeStyles((theme: Theme) =>
             flex: 1,
         },
         right: {
-            flex: '0 0 100px',
+            flex: '0 0 80px',
             textAlign: 'right',
         },
         address: {
@@ -66,6 +66,7 @@ const useStyles = makeStyles((theme: Theme) =>
         added: {
             color: theme.palette.text.hint,
             marginTop: theme.spacing(1),
+            fontSize: '0.9em',
         },
         meta: {
             marginTop: theme.spacing(0.5),
