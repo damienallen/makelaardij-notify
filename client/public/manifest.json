@@ -5,7 +5,13 @@
     {
       "src": "home_icon.png",
       "type": "image/png",
-      "sizes": "512x512 192x192 64x64 32x32 24x24 16x16",
+      "sizes": "512x512 192x192",
+      "purpose": "any"
+    },
+    {
+      "src": "home_icon_maskable.png",
+      "type": "image/png",
+      "sizes": "512x512 192x192",
       "purpose": "maskable"
     }
   ],
