@@ -15,6 +15,7 @@ const useStyles = makeStyles((theme: Theme) =>
             '& img': {
                 margin: '0 auto 64px auto',
                 width: '80%',
+                maxWidth: 420,
             },
         },
     })
@@ -23,6 +24,8 @@ const useStyles = makeStyles((theme: Theme) =>
 export const Loading: React.FC = observer(() => {
     const { apartments } = useStores()
     const classes = useStyles()
+
+    // TODO: show 'loading' vs 'no matches' text
 
     return apartments.filteredList.length === 0 ? (
         <div className={classes.container}>

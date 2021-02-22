@@ -30,6 +30,7 @@ export const ApartmentList: React.FC = observer(() => {
 
     const now = new Date()
     const today = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59)
+    const showCount = 50
 
     const threholds = [
         { label: 'Today', value: 0 },
@@ -44,7 +45,7 @@ export const ApartmentList: React.FC = observer(() => {
 
     const numListings = settings.showAll
         ? apartments.filteredList.length
-        : Math.min(100, apartments.filteredList.length)
+        : Math.min(showCount, apartments.filteredList.length)
     let listItems = [<div id="top-anchor" key="scroll-top" />]
     for (let i = 0; i < numListings; i++) {
         const a = apartments.filteredList[i]
@@ -67,7 +68,7 @@ export const ApartmentList: React.FC = observer(() => {
 
         if (i < numListings - 1) {
             listItems.push(<Divider key={`divider-${i}`} component="li" />)
-        } else if (numListings === 100 && !settings.showAll) {
+        } else if (numListings === showCount && !settings.showAll) {
             listItems.push(<Divider key={`divider-${i}`} component="li" />)
             listItems.push(
                 <ListItem alignItems="center" onClick={() => settings.setShowAll(true)}>
@@ -78,7 +79,7 @@ export const ApartmentList: React.FC = observer(() => {
             listItems.push(<Divider key={`divider-${i}`} component="li" />)
             listItems.push(
                 <ListItem alignItems="center" onClick={() => settings.setShowAll(false)}>
-                    <div className={classes.all}>Only Show First 100</div>
+                    <div className={classes.all}>Only Show First {showCount}</div>
                 </ListItem>
             )
         }
