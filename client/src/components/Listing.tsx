@@ -16,6 +16,7 @@ type StyleProps = {
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
         root: {
+            padding: theme.spacing(1),
             display: 'flex',
             '& a': {
                 textDecoration: 'none !important',
