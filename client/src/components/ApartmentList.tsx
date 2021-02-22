@@ -1,7 +1,7 @@
 import React from 'react'
 import { observer } from 'mobx-react'
 import { createStyles, Theme, makeStyles } from '@material-ui/core/styles'
-import { Divider, List, ListSubheader } from '@material-ui/core'
+import { Divider, List, ListItem, ListSubheader } from '@material-ui/core'
 
 import { Listing } from './Listing'
 import { useStores } from '../stores/root'
@@ -16,11 +16,16 @@ const useStyles = makeStyles((theme: Theme) =>
         subheader: {
             backgroundColor: theme.palette.primary.main,
         },
+        all: {
+            textAlign: 'center',
+            width: '100%',
+            cursor: 'pointer',
+        },
     })
 )
 
 export const ApartmentList: React.FC = observer(() => {
-    const { apartments } = useStores()
+    const { apartments, settings } = useStores()
     const classes = useStyles()
 
     const now = new Date()
@@ -37,9 +42,10 @@ export const ApartmentList: React.FC = observer(() => {
         { label: 'Way Back', value: 365 },
     ]
 
-    const numListings = apartments.filteredList.length
+    const numListings = settings.showAll
+        ? apartments.filteredList.length
+        : Math.min(100, apartments.filteredList.length)
     let listItems = [<div id="top-anchor" key="scroll-top" />]
-
     for (let i = 0; i < numListings; i++) {
         const a = apartments.filteredList[i]
         const listingDate = apartments.getSortDate(a)
@@ -58,8 +64,23 @@ export const ApartmentList: React.FC = observer(() => {
         }
 
         listItems.push(<Listing key={`listing-${i}`} listing={a} />)
+
         if (i < numListings - 1) {
             listItems.push(<Divider key={`divider-${i}`} component="li" />)
+        } else if (numListings === 100 && !settings.showAll) {
+            listItems.push(<Divider key={`divider-${i}`} component="li" />)
+            listItems.push(
+                <ListItem alignItems="center" onClick={() => settings.setShowAll(true)}>
+                    <div className={classes.all}>Show All</div>
+                </ListItem>
+            )
+        } else if (settings.showAll) {
+            listItems.push(<Divider key={`divider-${i}`} component="li" />)
+            listItems.push(
+                <ListItem alignItems="center" onClick={() => settings.setShowAll(false)}>
+                    <div className={classes.all}>Only Show First 100</div>
+                </ListItem>
+            )
         }
     }
 

@@ -10,6 +10,7 @@ export class SettingStore {
 
     @observable fcmToken: string = ''
     @observable pushEnabled: boolean = false
+    @observable showAll: boolean = false
 
     @action setHost(value: string) {
         this.host = value
@@ -89,6 +90,10 @@ export class SettingStore {
 
     @action togglePushEnabled() {
         this.setPushEnabled(!this.pushEnabled)
+    }
+
+    @action setShowAll(value: boolean) {
+        this.showAll = value
     }
 
     @computed get authenticated() {
