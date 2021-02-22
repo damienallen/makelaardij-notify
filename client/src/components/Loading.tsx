@@ -14,7 +14,7 @@ const useStyles = makeStyles((theme: Theme) =>
             textAlign: 'center',
             '& img': {
                 margin: '0 auto 64px auto',
-                width: '60%',
+                width: '80%',
             },
         },
     })
