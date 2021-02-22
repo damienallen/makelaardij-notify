@@ -52,8 +52,6 @@ async def broadcast_apartment(a: Apartment):
                 count += 1
                 await send_message(s, title, body, a.url)
 
-    # print(f"Messaged {count} of {len(subs)} subscriptions")
-
 
 async def broadcast(title: str, body: str, url: str):
     subs = await engine.find(Subscription)
