@@ -97,12 +97,12 @@ export const Listing: React.FC<Props> = ({ listing }) => {
 
     let displayDate: Dayjs
     if (listing.added) {
-        const addedDate = dayjs(Date.parse(listing.added))
+        const addedDate = dayjs(Date.parse(listing.added + 'Z'))
         displayDate = dayjs().isSame(addedDate, 'day')
-            ? dayjs(Date.parse(listing.entry_added))
+            ? dayjs(Date.parse(listing.entry_added + 'Z'))
             : addedDate
     } else {
-        displayDate = dayjs(Date.parse(listing.entry_added))
+        displayDate = dayjs(Date.parse(listing.entry_added + 'Z'))
     }
 
     const constructionYear = listing.building.year_constructed ? (
