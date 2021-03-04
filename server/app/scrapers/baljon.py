@@ -1,6 +1,5 @@
 import asyncio
-from datetime import datetime
-from typing import List, Union
+from typing import List
 
 from app.common import SkipListing
 from app.scrapers.base import BaseScraper

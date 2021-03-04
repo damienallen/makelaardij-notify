@@ -117,7 +117,9 @@ class BlijdorpScraper(BaseScraper):
         meta_data["unit"]["own_land"] = (
             raw_data["Eigendom"] == "Eigendom" if raw_data.get("Eigendom") else None
         )
-        meta_data["unit"]["num_bathrooms"] = self.find_int(raw_data["Aantal badkamers"])
+
+        if num_bathrooms := raw_data.get("Aantal badkamers"):
+            meta_data["unit"]["num_bathrooms"] = self.find_int(num_bathrooms)
         meta_data["unit"]["energy"] = {
             "heating": raw_data.get("Verwarmingssysteem"),
             "water": raw_data.get("Warm water"),
