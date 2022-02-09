@@ -1,0 +1,20 @@
+# Dev env
+.webpack
+.vscode
+node_modules
+npm-debug.log
+
+# Build
+build
+out
+temp
+
+# Logs
+report.*.json
+
+# Ignore artifacts:
+coverage
+.eslintrc.js
+
+# Ignore all HTML files:
+*.html

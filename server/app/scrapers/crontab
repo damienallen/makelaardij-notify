@@ -1,0 +1,15 @@
+*/15 * * * * cd /home/damien/mothership/makelaardij-notify/server && /home/damien/.cache/pypoetry/virtualenvs/makenot-vTuAG9By-py3.8/bin/python -m app.scrapers.blijdorp >> /home/damien/scrapers.log 2>&1
+*/15 * * * * cd /home/damien/mothership/makelaardij-notify/server && /home/damien/.cache/pypoetry/virtualenvs/makenot-vTuAG9By-py3.8/bin/python -m app.scrapers.maarten >> /home/damien/scrapers.log 2>&1
+*/15 * * * * cd /home/damien/mothership/makelaardij-notify/server && /home/damien/.cache/pypoetry/virtualenvs/makenot-vTuAG9By-py3.8/bin/python -m app.scrapers.vandevijver >> /home/damien/scrapers.log 2>&1
+*/15 * * * * cd /home/damien/mothership/makelaardij-notify/server && /home/damien/.cache/pypoetry/virtualenvs/makenot-vTuAG9By-py3.8/bin/python -m app.scrapers.voorberg >> /home/damien/scrapers.log 2>&1
+
+*/15 * * * * cd /home/damien/mothership/makelaardij-notify/server && /home/damien/.cache/pypoetry/virtualenvs/makenot-vTuAG9By-py3.8/bin/python -m app.scrapers.vankleef >> /home/damien/scrapers.log 2>&1
+*/15 * * * * cd /home/damien/mothership/makelaardij-notify/server && /home/damien/.cache/pypoetry/virtualenvs/makenot-vTuAG9By-py3.8/bin/python -m app.scrapers.m1 >> /home/damien/scrapers.log 2>&1
+*/15 * * * * cd /home/damien/mothership/makelaardij-notify/server && /home/damien/.cache/pypoetry/virtualenvs/makenot-vTuAG9By-py3.8/bin/python -m app.scrapers.de >> /home/damien/scrapers.log 2>&1
+*/15 * * * * cd /home/damien/mothership/makelaardij-notify/server && /home/damien/.cache/pypoetry/virtualenvs/makenot-vTuAG9By-py3.8/bin/python -m app.scrapers.prins >> /home/damien/scrapers.log 2>&1
+*/15 * * * * cd /home/damien/mothership/makelaardij-notify/server && /home/damien/.cache/pypoetry/virtualenvs/makenot-vTuAG9By-py3.8/bin/python -m app.scrapers.woonvisie >> /home/damien/scrapers.log 2>&1
+*/15 * * * * cd /home/damien/mothership/makelaardij-notify/server && /home/damien/.cache/pypoetry/virtualenvs/makenot-vTuAG9By-py3.8/bin/python -m app.scrapers.lokkerbol >> /home/damien/scrapers.log 2>&1
+*/15 * * * * cd /home/damien/mothership/makelaardij-notify/server && /home/damien/.cache/pypoetry/virtualenvs/makenot-vTuAG9By-py3.8/bin/python -m app.scrapers.vanoosten >> /home/damien/scrapers.log 2>&1
+*/15 * * * * cd /home/damien/mothership/makelaardij-notify/server && /home/damien/.cache/pypoetry/virtualenvs/makenot-vTuAG9By-py3.8/bin/python -m app.scrapers.ooms >> /home/damien/scrapers.log 2>&1
+*/15 * * * * cd /home/damien/mothership/makelaardij-notify/server && /home/damien/.cache/pypoetry/virtualenvs/makenot-vTuAG9By-py3.8/bin/python -m app.scrapers.baljon >> /home/damien/scrapers.log 2>&1
+*/15 * * * * cd /home/damien/mothership/makelaardij-notify/server && /home/damien/.cache/pypoetry/virtualenvs/makenot-vTuAG9By-py3.8/bin/python -m app.scrapers.teriele >> /home/damien/scrapers.log 2>&1

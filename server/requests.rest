@@ -1,0 +1,42 @@
+### Test endpoint
+GET https://aanbod.dallen.dev/api/ HTTP/1.1
+
+### List apartments
+GET https://aanbod.dallen.dev/api/apartments/ HTTP/1.1
+
+### Clear apartments
+GET https://aanbod.dallen.dev/api/apartments/clear/ HTTP/1.1
+Master: dev_tokenz
+
+### Add FCM subscriptions
+POST https://aanbod.dallen.dev/api/subs/ HTTP/1.1
+content-type: application/json
+
+{
+  "filter": {
+    "price": {
+      "high": 370,
+      "low": 150
+    },
+    "area": {
+      "high": 125,
+      "low": 50
+    },
+    "year": {
+      "high": 2020,
+      "low": 1900
+    },
+    "availability": "all"
+  },
+  "token": "abcde"
+}
+
+### List FCM subscriptions
+GET https://aanbod.dallen.dev/api/subs/list/ HTTP/1.1
+Master: dev_token
+
+### Clear FCM subscriptions
+GET https://aanbod.dallen.dev/api/subs/clear/ HTTP/1.1
+Master: dev_token
+
+

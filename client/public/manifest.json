@@ -1,0 +1,22 @@
+{
+  "short_name": "Aanbod",
+  "name": "Makelaardij Aanbod",
+  "icons": [
+    {
+      "src": "assets/home_icon_maskable.png",
+      "type": "image/png",
+      "sizes": "512x512 192x192",
+      "purpose": "maskable"
+    },
+    {
+      "src": "assets/home_icon.png",
+      "type": "image/png",
+      "sizes": "512x512 192x192",
+      "purpose": "any"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#ffca28",
+  "background_color": "#ffca28"
+}

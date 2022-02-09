@@ -1,0 +1,28 @@
+[tool.poetry]
+name = "makenot"
+version = "0.1.0"
+description = "Scrapers and simple backend"
+authors = ["Damien Allen <dev@dallen.co>"]
+license = "MIT"
+readme = "README.md"
+packages = [{ include = "app" }]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+pydantic = "^1.7.3"
+beautifulsoup4 = "^4.9.3"
+fastapi = "^0.63.0"
+uvicorn = "^0.13.3"
+odmantic = "^0.3.2"
+httpx = "^0.16.1"
+firebase-admin = "^4.5.2"
+
+[tool.poetry.dev-dependencies]
+black = "^20.8b1"
+flake8 = "^3.8.4"
+mypy = "^0.800"
+isort = "^5.7.0"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
