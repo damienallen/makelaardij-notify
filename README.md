@@ -26,3 +26,8 @@ Apartment scraper with simple UI for Rotterdam real-estate brokers
 - Typescript
 - MobX
 - Material-UI
+
+### Screenshots
+
+<img src="https://user-images.githubusercontent.com/17518047/153133969-922ccada-1da0-403c-9e2c-f033accaa5bf.png" width="280"> <img src="https://user-images.githubusercontent.com/17518047/153133976-75ff9fa3-9170-4e91-a983-b65f4a61384c.png" width="280">
+
