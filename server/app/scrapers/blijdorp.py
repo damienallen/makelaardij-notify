@@ -110,7 +110,7 @@ class BlijdorpScraper(BaseScraper):
         )
 
         meta_data["unit"]["area"] = self.find_float(
-            raw_data["Gebruiksoppervlakte wonen"]
+            raw_data.get("Gebruiksoppervlakte wonen")
         )
         meta_data["unit"]["volume"] = self.find_float(raw_data["Inhoud"])
         meta_data["unit"]["vve_cost"] = self.find_float(raw_data.get("Servicekosten"))
